@@ -1,6 +1,9 @@
+import glob
 import unittest
 
 import os
+import uuid
+
 from mock import patch, Mock
 import sys
 
@@ -90,7 +93,31 @@ class Redshift_Playblast_Test(unittest.TestCase):
         redshift=playblast.Redshift(my_mock)
 
         #now check correctness of values
-        #todo implement checks
+
+    def test_render_frames_no_redshift_config(self):
+        """
+        Tests rendering a file which didnt hat redshift loaded before
+        :return:
+        """
+        argparse_mock = Mock()
+        frames=get_resource('test_render_{0}'.format(str(uuid.uuid4()).split('-')[0]))
+        my_mock = construct_args_mock(file_path=get_resource('test_scene_cube_no_redshift.ma'),
+                                      start_frame=1,
+                                      end_frame=3,
+                                      frame_path=frames,
+                                      camera='render_cam',
+                                      )
+
+        redshift = playblast.Redshift(my_mock)
+        redshift.render_frame(1)
+
+        files=glob.glob(frames+'*')
+        self.assertTrue(len(files)==3)
+
+        for f in files:
+            os.remove(f)
+
+
 
 
 

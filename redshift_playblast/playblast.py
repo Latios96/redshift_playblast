@@ -16,6 +16,7 @@ Motionblur
 quality: LOW, MED, HIGH
 """
 import pymel.core as pm
+import maya.mel as mel
 
 QUALITY_PRESETS={
     'low': {
@@ -48,6 +49,8 @@ class Redshift(object):
         pm.openFile(self.args.file_path, force=True)
         # load redshift plugin
         pm.loadPlugin('redshift4maya')
+        if len(pm.ls('redshiftOptions'))==0:
+            pm.createNode('RedshiftOptions')
         #change renderer
         self._get_object_by_name("defaultRenderGlobals").currentRenderer.set('redshift')
         #set file format and other render setting stuff
@@ -92,10 +95,11 @@ class Redshift(object):
         default_resolution.height.set(height)
 
     def set_frame_path(self, frame_path):
-        self._get_object_by_name('redshiftOptions').imageFilePrefix.set(frame_path)
+        self._get_object_by_name('defaultRenderGlobals').imageFilePrefix.set(frame_path)
 
     def set_camera(self, camera):
         self.camera=self._get_object_by_name(camera)
+        mel.eval('makeCameraRenderable("{0}")'.format(camera))
 
     def set_dof(self, dof_enabled):
         self.camera.depthOfField.set(1 if dof_enabled else 0)
@@ -105,18 +109,26 @@ class Redshift(object):
         self._get_object_by_name("redshiftOptions").motionBlurDeformationEnable.set(motion_blur)
 
     def set_quality(self, quality):
-        pass
+        self._get_object_by_name("redshiftOptions").unifiedMinSamples.set(QUALITY_PRESETS[quality.lower()]['min_samples'])
+        self._get_object_by_name("redshiftOptions").unifiedMaxSamples.set(QUALITY_PRESETS[quality.lower()]['max_samples'])
+        self._get_object_by_name("redshiftOptions").unifiedAdaptiveErrorThreshold.set(QUALITY_PRESETS[quality.lower()]['threshold'])
 
-    def render_frame(frame_number):
+    def render_frame(self, frame_number):
         """
         renders frame with given number
         :return:
         """
-        pass
+        mel.eval('mayaBatchRenderProcedure(0, "", "' + str('defaultRenderLayer') + '", "' + 'redshift' + '", "")')
 
 class PlayblastQualityError(Exception):
+    """
+    Exception thrown when a non-valid quality settings was supplied
+    """
     pass
 class ObjectNotExistsError(Exception):
+    """
+    Exception thrown when there is no object with the given name, for example persp_ysdf
+    """
     pass
 
 def main():
