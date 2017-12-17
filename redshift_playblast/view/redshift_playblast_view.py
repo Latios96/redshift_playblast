@@ -79,19 +79,19 @@ from Qt import QtWidgets  # pylint: disable=E0611
 from Qt import QtCore  # pylint: disable=E0611
 from Qt import QtCompat
 
-
+from redshift_playblast.logic import maya_manager
 
 # Debug
 # print('Using' + QtCompat.__binding__)
 
 
-class Boilerplate(QtWidgets.QMainWindow):
+class Redshift_Playblast_View(QtWidgets.QMainWindow):
     """Example showing how UI files can be loaded using the same script
     when taking advantage of the Qt.py module and build-in methods
     from PySide/PySide2/PyQt4/PyQt5."""
 
     def __init__(self, parent=None):
-        super(Boilerplate, self).__init__(parent)
+        super(Redshift_Playblast_View, self).__init__(parent)
 
         # Set object name and window title
         self.setObjectName(WINDOW_OBJECT)
@@ -110,15 +110,55 @@ class Boilerplate(QtWidgets.QMainWindow):
         main_window_file = os.path.join(UI_PATH, 'view_maya.ui')
 
         # Load UIs
-        self.main_widget = QtCompat.load_ui(main_window_file)  # Main window UI
+        self._ui = QtCompat.load_ui(main_window_file)  # Main window UI
 
         # Set the main widget
-        self.setCentralWidget(self.main_widget)
+        self.setCentralWidget(self._ui)
 
         # Define minimum size of UI
         self.setMinimumSize(380, 356)
 
+        self.maya_manager=maya_manager.Maya_Manager()
         # Signals
+        self.maya_manager.job.data_changed.connect(self.update_view)
+        self._ui.txtStartFrame.textChanged.connect(lambda x: self.maya_manager.set_job_value('start_frame', x))
+        self._ui.txtEndFrame.textChanged.connect(lambda x: self.maya_manager.set_job_value('end_frame', x))
+        self._ui.txtWidth.textChanged.connect(lambda x: self.maya_manager.set_job_value('width', x))
+        self._ui.txtHeight.textChanged.connect(lambda x: self.maya_manager.set_job_value('height', x))
+
+        self._ui.cmBxCamera.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('camera', self._ui.cmBxCamera.currentText()))
+        self._ui.chBxMotionBlur.stateChanged.connect(lambda x: self.maya_manager.set_job_value('motion_blur', x))
+        self._ui.chBxDof.stateChanged.connect(lambda x: self.maya_manager.set_job_value('dof', x))
+
+        self._ui.cmbxQuality.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('quality', self._ui.cmbxQuality.currentText()))
+
+        self._ui.btnSubmit.clicked.connect(self.maya_manager.submit)
+        self.update_view()
+
+    def update_view(self):
+        print "update view"
+        job=self.maya_manager.job
+
+        #start end frame
+        self._ui.txtStartFrame.setText(str(job.start_frame))
+        self._ui.txtEndFrame.setText(str(job.end_frame))
+
+        #resolution
+        self._ui.txtWidth.setText(str(job.width))
+        self._ui.txtHeight.setText(str(job.height))
+
+        #camera
+        self._ui.cmBxCamera.clear()
+        old_cam=job.camera.name()
+        for camera in job.avaible_cameras:
+            self._ui.cmBxCamera.addItem(camera.name())
+        self._ui.cmBxCamera.setCurrentIndex(self._ui.cmBxCamera.findText(old_cam))
+        self._ui.chBxMotionBlur.setCheckState(QtCore.Qt.CheckState.Checked if job.motion_blur else QtCore.Qt.CheckState.Unchecked)
+        self._ui.chBxDof.setCheckState(QtCore.Qt.CheckState.Checked if job.dof else QtCore.Qt.CheckState.Unchecked)
+
+        #output
+        self._ui.cmbxQuality.setCurrentIndex(self._ui.cmbxQuality.findText(job.quality))
+        self._ui.txtOutput.setText(job.frame_path)
 
 # ----------------------------------------------------------------------
 # DCC application helper functions
@@ -134,7 +174,7 @@ def _maya_delete_ui():
 
 def _maya_main_window():
     """Return Maya's main window"""
-    for obj in QtWidgets.qApp.topLevelWidgets():
+    for obj in QtWidgets.QApplication.topLevelWidgets():
         if obj.objectName() == 'MayaWindow':
             return obj
     raise RuntimeError('Could not find MayaWindow instance')
@@ -146,7 +186,7 @@ def _maya_main_window():
 def run_maya():
     """Run in Maya"""
     _maya_delete_ui()  # Delete any existing existing UI
-    boil = Boilerplate(parent=_maya_main_window())
+    boil = Redshift_Playblast_View(parent=_maya_main_window())
 
     # Makes Maya perform magic which makes the window stay
     # on top in OS X and Linux. As an added bonus, it'll

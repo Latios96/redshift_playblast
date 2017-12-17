@@ -134,8 +134,6 @@
           </item>
          </layout>
         </widget>
-        <zorder>gridLayoutWidget</zorder>
-        <zorder>groupBox_3</zorder>
        </widget>
       </item>
      </layout>
@@ -189,14 +187,18 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="txtOutput"/>
+         <widget class="QLineEdit" name="txtOutput">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="btnSubmit">
       <property name="minimumSize">
        <size>
         <width>0</width>

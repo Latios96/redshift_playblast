@@ -21,8 +21,8 @@ def construct_args_mock(**kwargs):
     args_mock.frame_path=get_resource('playblast_test.####.exr')
     args_mock.file_path=get_resource('test_scene_cube.ma')
     args_mock.camera='camera1'
-    args_mock.dof = True
-    args_mock.motion_blur=True
+    args_mock.dof = 'True'
+    args_mock.motion_blur='True'
     args_mock.quality='low'
 
     for key, value in kwargs.iteritems():

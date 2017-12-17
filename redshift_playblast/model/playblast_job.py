@@ -1,9 +1,13 @@
 import os
 import subprocess
+from Qt import QtCore
 
-class Playblast_Job(object):
+class Playblast_Job(QtCore.QObject):
 
-    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, context=None):
+    data_changed=QtCore.Signal()
+
+    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, context=None, avaible_cameras=[]):
+        super(Playblast_Job, self).__init__()
         self.file_path=file_path
         self.start_frame=start_frame
         self.end_frame=end_frame
@@ -16,6 +20,21 @@ class Playblast_Job(object):
         self.motion_blur=motion_blur
         self.quality=quality
         self.context=context
+        self.avaible_cameras=avaible_cameras
+
+    def ___str__(self):
+        string=""
+        string+="{0}={1}\n".format('file_path', self.file_path)
+        string+="{0}={1}\n".format('start_frame', self.start_frame)
+        string+="{0}={1}\n".format('end_frame', self.end_frame)
+        string+="{0}={1}\n".format('width', self.width)
+        string+="{0}={1}\n".format('height', self.height)
+        string+="{0}={1}\n".format('movie_path', self.movie_path)
+        string+="{0}={1}\n".format('camera', self.camera.name())
+        string+="{0}={1}\n".format('dof', self.dof)
+        string+="{0}={1}\n".format('motion_blur', self.motion_blur)
+        string+="{0}={1}\n".format('quality', self.quality)
+        return string
 
     def submit_to_deadline(self):
         """

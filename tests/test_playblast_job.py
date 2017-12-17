@@ -3,7 +3,8 @@ import unittest
 from ktrack_metadata import ktrack_metadata
 from mock import Mock, patch
 
-from redshift_playblast import playblast_job
+from redshift_playblast.model import playblast_job
+
 
 class MyTestCase(unittest.TestCase):
     @patch('subprocess.check_output')

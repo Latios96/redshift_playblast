@@ -99,7 +99,7 @@ class Redshift(object):
     def set_frame_path(self, frame_path):
         print "set frame path to ", frame_path
         print "replaced path to ", frame_path.replace("_####.exr", "")
-        self._get_object_by_name('defaultRenderGlobals').imageFilePrefix.set(frame_path.replace("_####.exr", ""))
+        self._get_object_by_name('defaultRenderGlobals').imageFilePrefix.set(frame_path.replace(".####.exr", ""))
 
     def set_camera(self, camera):
         print "set camera to ", camera
