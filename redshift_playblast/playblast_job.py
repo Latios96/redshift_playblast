@@ -25,16 +25,15 @@ class Playblast_Job(object):
         print "submitting to deadline"
         PLUGIN_INFO_PATH="M:/redshift_playblast_pluginInfo.job"
         JOB_INFO_PATH = "M:/redshift_playblast_jobInfo.job"
-        #job info: OutputDirectory0
 
-        #alles andere: plugin
+        #write plugin info
         plugin_info_file = open(PLUGIN_INFO_PATH, 'w')
 
         plugin_info_file.write("{0}={1}\n".format('file_path', self.file_path))
-        plugin_info_file.write("{0}={1}\n".format('start_frame', self.end_frame))
+        plugin_info_file.write("{0}={1}\n".format('start_frame', self.start_frame))
+        plugin_info_file.write("{0}={1}\n".format('end_frame', self.end_frame))
         plugin_info_file.write("{0}={1}\n".format('width', self.width))
         plugin_info_file.write("{0}={1}\n".format('height', self.height))
-        plugin_info_file.write("{0}={1}\n".format('frame_path', self.frame_path))
         plugin_info_file.write("{0}={1}\n".format('movie_path', self.movie_path))
         plugin_info_file.write("{0}={1}\n".format('camera', self.camera.name()))
         plugin_info_file.write("{0}={1}\n".format('dof', self.dof))
@@ -44,9 +43,13 @@ class Playblast_Job(object):
             plugin_info_file.write("ktrack_{0}={1}\n".format(key, value))
         plugin_info_file.close()
 
+        #write job info
         job_info_file=open(JOB_INFO_PATH, 'w')
         job_info_file.write("{0}={1}\n".format('Name', os.path.basename(self.file_path)))
         job_info_file.write("{0}={1}\n".format('Plugin', 'RedshiftPlayblast'))
+        job_info_file.write("{0}={1}\n".format('OutputDirectory0', os.path.dirname(self.frame_path)))
+        job_info_file.write("{0}={1}\n".format('OutputFilename0', os.path.basename(self.frame_path)))
+        job_info_file.write("PostJobScript=M:/Projekte/z_pipeline/Deadline10/custom/scripts/Jobs/create_upload_quicktime.py")
 
         job_info_file.close()
 

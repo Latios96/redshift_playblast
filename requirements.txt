@@ -1,2 +1,4 @@
 mock
 git+ssh://git@github.com/Latios96/ktrack_metadata.git
+PySide
+Qt.py

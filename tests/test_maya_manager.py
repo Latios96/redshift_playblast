@@ -1,8 +1,14 @@
 import unittest
+
+import os
+
+from ktrack_metadata import ktrack_metadata
 from mock import patch, Mock
 
 from redshift_playblast.logic import maya_manager
 
+def get_resource(name):
+    return os.path.join(os.path.dirname(__file__), 'resources', name)
 
 class Redshift_Playblast_Test(unittest.TestCase):
 
@@ -31,8 +37,3 @@ class Redshift_Playblast_Test(unittest.TestCase):
         self.assertNotEqual(manager.job.quality, None)
         self.assertNotEqual(manager.job.context, None)
 
-    def test_submit(self):
-        """
-        Tests the submission of a simple scene to Deadline
-        :return:
-        """

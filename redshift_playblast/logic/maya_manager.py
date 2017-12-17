@@ -1,3 +1,5 @@
+import os
+
 from redshift_playblast import playblast_job
 import pymel.core as pm
 import ktrack_metadata
@@ -7,8 +9,8 @@ class Maya_Manager(object):
 
     def __init__(self):
         self.job=playblast_job.Playblast_Job(file_path=pm.sceneName(),
-                                             start_frame=pm.playbackOptions(minTime=True),
-                                             end_frame=pm.playbackOptions(maxTime=True),
+                                             start_frame=pm.playbackOptions(minTime=True, query=True),
+                                             end_frame=pm.playbackOptions(maxTime=True, query=True),
                                              width=1920,
                                              height=1080,
                                              frame_path=self.get_frame_path(),
@@ -20,10 +22,10 @@ class Maya_Manager(object):
                                              context=ktrack_metadata.from_scene())
 
     def get_frame_path(self):
-        return "{project_location}/movies/{scene_name}_####.exr".format(project_location=pm.workspace.path, scene_name=pm.sceneName())
+        return "{project_location}/movies/{scene_name}_####.exr".format(project_location=pm.workspace.path, scene_name=os.path.splitext(os.path.basename(pm.sceneName()))[0])
 
     def get_movie_path(self):
-        return "{project_location}/movies/{scene_name}.mov".format(project_location=pm.workspace.path, scene_name=pm.sceneName())
+        return "{project_location}/movies/{scene_name}.mov".format(project_location=pm.workspace.path, scene_name=os.path.splitext(os.path.basename(pm.sceneName()))[0])
 
     def get_camera_information(self):
 
