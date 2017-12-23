@@ -18,7 +18,7 @@ def construct_args_mock(**kwargs):
     args_mock.end_frame = 2
     args_mock.width=1920
     args_mock.height = 1080
-    args_mock.frame_path=get_resource('playblast_test.####.exr')
+    args_mock.frame_path=get_resource('playblast_test.####.png')
     args_mock.file_path=get_resource('test_scene_cube.ma')
     args_mock.camera='camera1'
     args_mock.dof = 'True'

@@ -25,7 +25,7 @@ class Maya_Manager(object):
                                               avaible_cameras=self.get_avaible_cameras())
 
     def get_frame_path(self):
-        return "{project_location}/movies/{scene_name}.####.exr".format(project_location=pm.workspace.path, scene_name=os.path.splitext(os.path.basename(pm.sceneName()))[0])
+        return "{project_location}/movies/{scene_name}.####.png".format(project_location=pm.workspace.path, scene_name=os.path.splitext(os.path.basename(pm.sceneName()))[0])
 
     def get_movie_path(self):
         return "{project_location}/movies/{scene_name}.mov".format(project_location=pm.workspace.path, scene_name=os.path.splitext(os.path.basename(pm.sceneName()))[0])

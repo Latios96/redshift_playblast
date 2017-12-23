@@ -66,9 +66,10 @@ class Playblast_Job(QtCore.QObject):
         job_info_file=open(JOB_INFO_PATH, 'w')
         job_info_file.write("{0}={1}\n".format('Name', os.path.basename(self.file_path)))
         job_info_file.write("{0}={1}\n".format('Plugin', 'RedshiftPlayblast'))
+        job_info_file.write("{0}={1}\n".format('Frames', self.start_frame))
         job_info_file.write("{0}={1}\n".format('OutputDirectory0', os.path.dirname(self.frame_path)))
         job_info_file.write("{0}={1}\n".format('OutputFilename0', os.path.basename(self.frame_path)))
-        job_info_file.write("PostJobScript=M:/Projekte/z_pipeline/Deadline10/custom/scripts/Jobs/create_upload_quicktime.py")
+        job_info_file.write("PostJobScript=M:/Projekte/z_pipeline/Deadline10/custom/scripts/Jobs/create_upload_playblast.py")
 
         job_info_file.close()
 

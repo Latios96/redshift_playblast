@@ -54,7 +54,8 @@ class Redshift(object):
         #change renderer
         self._get_object_by_name("defaultRenderGlobals").currentRenderer.set('redshift')
         #set file format and other render setting stuff
-        self._get_object_by_name("redshiftOptions").imageFormat.set(1)
+        self._get_object_by_name("redshiftOptions").imageFormat.set(2)
+
         self._get_object_by_name("defaultRenderGlobals").animation.set(1)
         self._get_object_by_name("defaultRenderGlobals").extensionPadding.set(4)
 
@@ -98,8 +99,8 @@ class Redshift(object):
 
     def set_frame_path(self, frame_path):
         print "set frame path to ", frame_path
-        print "replaced path to ", frame_path.replace("_####.exr", "")
-        self._get_object_by_name('defaultRenderGlobals').imageFilePrefix.set(frame_path.replace(".####.exr", ""))
+        print "replaced path to ", frame_path.replace("_####.png", "")
+        self._get_object_by_name('defaultRenderGlobals').imageFilePrefix.set(frame_path.replace(".####.png", ""))
 
     def set_camera(self, camera):
         print "set camera to ", camera
