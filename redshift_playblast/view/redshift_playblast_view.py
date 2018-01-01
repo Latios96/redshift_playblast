@@ -77,8 +77,7 @@ if REPO_PATH not in sys.path:
 
 from Qt import QtWidgets  # pylint: disable=E0611
 from Qt import QtCore  # pylint: disable=E0611
-from Qt import QtCompat
-
+from Qt import QtUiTools
 from redshift_playblast.logic import maya_manager
 
 # Debug
@@ -110,7 +109,7 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         main_window_file = os.path.join(UI_PATH, 'view_maya.ui')
 
         # Load UIs
-        self._ui = QtCompat.load_ui(main_window_file)  # Main window UI
+        self.loadUiWidget(main_window_file)  # Main window UI
 
         # Set the main widget
         self.setCentralWidget(self._ui)
@@ -135,8 +134,14 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self._ui.btnSubmit.clicked.connect(self.maya_manager.submit)
         self.update_view()
 
+    def loadUiWidget(self, uifilename, parent=None):
+        loader = QtUiTools.QUiLoader()
+        uifile = QtCore.QFile(uifilename)
+        uifile.open(QtCore.QFile.ReadOnly)
+        self._ui = loader.load(uifile, self)
+        uifile.close()
+
     def update_view(self):
-        print "update view"
         job=self.maya_manager.job
 
         #start end frame
