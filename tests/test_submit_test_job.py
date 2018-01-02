@@ -28,8 +28,8 @@ class MyTestCase(unittest.TestCase):
                                         version_id=0)
 
 
-        #pm.openFile(get_resource('test_scene_cube_no_redshift.ma'), force=True)
-        pm.openFile(r'M:\Projekte\2017\The_Cement_Mixer\Shots\shot010\shot010_Maya\shot010_Anim_v001.mb', force=True)
+        pm.openFile(get_resource('test_scene_cube_no_redshift.ma'), force=True)
+        #pm.openFile(r'M:\Projekte\2017\The_Cement_Mixer\Shots\shot010\shot010_Maya\shot010_Anim_v001.mb', force=True)
         manager = maya_manager.Maya_Manager()
         manager.job.submit_to_deadline()
 

@@ -24,7 +24,6 @@ class Redshift_Playblast_View_Test(unittest.TestCase):
 
         pm.openFile(get_resource('test_scene_cube_no_redshift.ma'), force=True)
         view=redshift_playblast_view.Redshift_Playblast_View()
-        print view
         #todo implement UI tests
 
 def main():
