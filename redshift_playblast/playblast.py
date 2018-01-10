@@ -44,6 +44,7 @@ QUALITY_PRESETS={
 class Redshift(object):
 
     def __init__(self, args):
+        #TODO validate args
         self.args=args
         #load file
         pm.openFile(self.args.file_path, force=True)

@@ -1,10 +1,9 @@
 # TODO
 - Readme
-- todo propper temp files for submission, no writing to M:
 - remove dependency from ktrack meta
 - proper Deadline Plugin: tests, settings für ffmpeg path, maya path, playblast.py script, ffmpeg settings
 - option to remove temp png images
-- the cmd line script should control ffmpeg and not the Deadline Plugin
+- the playblaster should control ffmpeg and not the Deadline Plugin
 - do local playblast in current maya scene
 - QC Renders for Alembics and VDBs
 ## install script

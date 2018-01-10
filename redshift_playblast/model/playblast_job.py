@@ -1,6 +1,11 @@
+import logging
 import os
 import subprocess
+import tempfile
+
 from Qt import QtCore
+
+logger = logging.getLogger(__name__)
 
 class Playblast_Job(QtCore.QObject):
 
@@ -42,10 +47,12 @@ class Playblast_Job(QtCore.QObject):
         :return:
         """
         print "submitting to deadline"
-        PLUGIN_INFO_PATH="M:/redshift_playblast_pluginInfo.job"
-        JOB_INFO_PATH = "M:/redshift_playblast_jobInfo.job"
+        PLUGIN_INFO_PATH=os.path.join(tempfile.gettempdir(), "redshift_playblast_pluginInfo.job")
+        JOB_INFO_PATH = os.path.join(tempfile.gettempdir(), "redshift_playblast_jobInfo.job")
 
         #write plugin info
+        logger.info('writing plugin info file to %s', PLUGIN_INFO_PATH)
+
         plugin_info_file = open(PLUGIN_INFO_PATH, 'w')
 
         plugin_info_file.write("{0}={1}\n".format('file_path', self.file_path))
@@ -63,6 +70,8 @@ class Playblast_Job(QtCore.QObject):
         plugin_info_file.close()
 
         #write job info
+        logger.info('writing job info file to %s', JOB_INFO_PATH)
+
         job_info_file=open(JOB_INFO_PATH, 'w')
         job_info_file.write("{0}={1}\n".format('Name', os.path.basename(self.file_path)))
         job_info_file.write("{0}={1}\n".format('Plugin', 'RedshiftPlayblast'))
@@ -74,5 +83,7 @@ class Playblast_Job(QtCore.QObject):
         job_info_file.close()
 
         cmd='"C:/Program Files/Thinkbox/Deadline10/bin/deadlinecommand.exe" {0} {1}'.format(JOB_INFO_PATH, PLUGIN_INFO_PATH)
-        print cmd
+        logger.info("starting submission...")
+        logger.info(cmd)
         subprocess.check_output(cmd)
+        logger.info("submission done")

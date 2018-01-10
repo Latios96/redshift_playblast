@@ -12,7 +12,8 @@ def get_resource(name):
 
 class MyTestCase(unittest.TestCase):
     @patch('ktrack_metadata.from_scene')
-    def test_submit(self,from_scene_mock):
+    @patch('subprocess.check_output')
+    def test_submit(self, check_output_mock, from_scene_mock):
         #Tests submission of simple file to deadline
 
         import pymel.core as pm
@@ -32,6 +33,7 @@ class MyTestCase(unittest.TestCase):
         #pm.openFile(r'M:\Projekte\2017\The_Cement_Mixer\Shots\shot010\shot010_Maya\shot010_Anim_v001.mb', force=True)
         manager = maya_manager.Maya_Manager()
         manager.job.submit_to_deadline()
+        self.assertTrue(check_output_mock.assert_called)
 
 
 if __name__ == '__main__':
