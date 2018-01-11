@@ -13,7 +13,7 @@ class Playblast_Job(QtCore.QObject):
 
     data_changed=QtCore.Signal()
 
-    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, context=None, avaible_cameras=[]):
+    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, avaible_cameras=[]):
         super(Playblast_Job, self).__init__()
         self.file_path=file_path
         self.start_frame=start_frame
@@ -26,7 +26,6 @@ class Playblast_Job(QtCore.QObject):
         self.dof=dof
         self.motion_blur=motion_blur
         self.quality=quality
-        self.context=context
         self.avaible_cameras=avaible_cameras
 
     def ___str__(self):
@@ -67,8 +66,6 @@ class Playblast_Job(QtCore.QObject):
         plugin_info_file.write("{0}={1}\n".format('dof', self.dof))
         plugin_info_file.write("{0}={1}\n".format('motion_blur', self.motion_blur))
         plugin_info_file.write("{0}={1}\n".format('quality', self.quality))
-        for key, value in self.context.iteritems():
-            plugin_info_file.write("ktrack_{0}={1}\n".format(key, value))
 
         logger.info("Executing hook deadline_plugin_info_file..")
         hooks.deadline_plugin_info_file(plugin_info_file)

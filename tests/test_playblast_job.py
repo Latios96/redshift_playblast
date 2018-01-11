@@ -1,7 +1,6 @@
 import unittest
 import os
 
-from ktrack_metadata import ktrack_metadata
 from mock import Mock, patch
 
 from redshift_playblast.model import playblast_job
@@ -23,35 +22,15 @@ class MyTestCase(unittest.TestCase):
                                           camera=Mock(),
                                           dof=True,
                                           motion_blur=True,
-                                          quality='med',
-                                          context=ktrack_metadata.Ktrack_metadata(  project_name='test_project',
-                                                                                    project_id=0,
-                                                                                    parent_id=0,
-                                                                                    parent_name='parent_name',
-                                                                                    parent_type='parent_type',
-                                                                                    task_name='task_name',
-                                                                                    task_id=0,
-                                                                                    version_name='version_name',
-                                                                                    version_id=0))
+                                          quality='med')
         job.submit_to_deadline()
         self.assertTrue(subprocess_mock.called)
 
-    @patch('ktrack_metadata.from_scene')
     @patch('subprocess.check_output')
-    def test_submit(self, check_output_mock, from_scene_mock):
+    def test_submit(self, check_output_mock):
         # Tests submission of simple file to deadline
 
         import pymel.core as pm
-
-        from_scene_mock.return_value = ktrack_metadata.Ktrack_metadata(project_name='test_project',
-                                                                       project_id=0,
-                                                                       parent_id=0,
-                                                                       parent_name='parent_name',
-                                                                       parent_type='parent_type',
-                                                                       task_name='task_name',
-                                                                       task_id=0,
-                                                                       version_name='version_name',
-                                                                       version_id=0)
 
         pm.openFile(get_resource('test_scene_cube_no_redshift.ma'), force=True)
         # pm.openFile(r'M:\Projekte\2017\The_Cement_Mixer\Shots\shot010\shot010_Maya\shot010_Anim_v001.mb', force=True)

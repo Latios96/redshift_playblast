@@ -15,11 +15,7 @@ def get_resource(name):
 
 class Redshift_Playblast_View_Test(unittest.TestCase):
 
-    @patch('ktrack_metadata.from_scene')
-    def test_creation(self, from_scene_mock):
-
-        from_scene_mock.return_value = Mock()
-
+    def test_creation(self):
         import pymel.core as pm
 
         pm.openFile(get_resource('test_scene_cube_no_redshift.ma'), force=True)

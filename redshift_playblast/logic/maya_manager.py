@@ -1,6 +1,5 @@
 import os
 
-import ktrack_metadata
 import pymel.core as pm
 from Qt import QtCore
 
@@ -21,7 +20,6 @@ class Maya_Manager(object):
                                               dof=self.get_camera_information()[1],
                                               motion_blur=True,
                                               quality='med',
-                                              context=ktrack_metadata.from_scene(),
                                               avaible_cameras=self.get_avaible_cameras())
 
     def get_frame_path(self):

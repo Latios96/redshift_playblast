@@ -1,10 +1,9 @@
 # TODO
 - Readme
-- remove dependency from ktrack meta
 - hooks
+- the playblaster should control ffmpeg and not the Deadline Plugin
 - proper Deadline Plugin: tests, settings für ffmpeg path, maya path, playblast.py script, ffmpeg settings
 - option to remove temp png images
-- the playblaster should control ffmpeg and not the Deadline Plugin
 - do local playblast in current maya scene
 - QC Renders for Alembics and VDBs
 ## install script
