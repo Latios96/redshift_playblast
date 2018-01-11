@@ -8,11 +8,12 @@ from mock import patch, Mock
 import sys
 
 from redshift_playblast import playblast
+from redshift_playblast.worker import redshift_worker
 
 def get_resource(name):
     return os.path.join(os.path.dirname(__file__), 'resources', name)
 
-def construct_args_mock(**kwargs):
+def construct_args_mock_cli(**kwargs):
     args_mock=Mock()
     args_mock.start_frame = 1
     args_mock.end_frame = 2
@@ -23,6 +24,24 @@ def construct_args_mock(**kwargs):
     args_mock.camera='camera1'
     args_mock.dof = 'True'
     args_mock.motion_blur='True'
+    args_mock.quality='low'
+
+    for key, value in kwargs.iteritems():
+        setattr(args_mock, key, value)
+
+    return args_mock
+
+def construct_args_mock(**kwargs):
+    args_mock=Mock()
+    args_mock.start_frame = 1
+    args_mock.end_frame = 2
+    args_mock.width=1920
+    args_mock.height = 1080
+    args_mock.frame_path=get_resource('playblast_test.####.png')
+    args_mock.file_path=get_resource('test_scene_cube.ma')
+    args_mock.camera='camera1'
+    args_mock.dof = True
+    args_mock.motion_blur=True
     args_mock.quality='low'
 
     for key, value in kwargs.iteritems():
@@ -41,14 +60,14 @@ class Redshift_Playblast_Test(unittest.TestCase):
         :return:
         """
         #constructing result fakce
-        my_mock=construct_args_mock(quality='ert')
+        my_mock=construct_args_mock_cli(quality='ert')
         argparse_mock.return_value=my_mock
 
         #now parse the args
         with self.assertRaises(playblast.PlayblastQualityError):
             playblast.main()
 
-    @patch('redshift_playblast.playblast.Redshift')
+    @patch('redshift_playblast.worker.redshift_worker.Redshift_Worker')
     @patch('argparse.ArgumentParser.parse_args')
     def test_spelling_robustness(self, argparse_mock,redshift_mock):
         """
@@ -58,7 +77,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
         """
         for spelling in ['low', 'loW', 'Low','high', 'HigH','med']:
             # constructing result fakce
-            my_mock=construct_args_mock(quality=spelling)
+            my_mock=construct_args_mock_cli(quality=spelling)
             argparse_mock.return_value = my_mock
 
             # now parse the args
@@ -73,13 +92,13 @@ class Redshift_Playblast_Test(unittest.TestCase):
         argparse_mock = Mock()
         my_mock = construct_args_mock()
 
-        redshift = playblast.Redshift(my_mock)
+        redshift = redshift_worker.Redshift_Worker(my_mock)
 
         # test existing obj
         self.assertFalse(redshift._get_object_by_name('persp')==None)
 
         # test non existing obj
-        with self.assertRaises(playblast.ObjectNotExistsError):
+        with self.assertRaises(redshift_worker.ObjectNotExistsError):
             redshift._get_object_by_name('persptrgft')
 
     def test_redshift_setter_correctness(self):
@@ -89,8 +108,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
         """
         argparse_mock=Mock()
         my_mock = construct_args_mock()
-        print
-        redshift=playblast.Redshift(my_mock)
+        redshift = redshift_worker.Redshift_Worker(my_mock)
 
         #now check correctness of values
 
@@ -108,8 +126,8 @@ class Redshift_Playblast_Test(unittest.TestCase):
                                       camera='render_cam',
                                       )
 
-        redshift = playblast.Redshift(my_mock)
-        redshift.render_frame(1)
+        redshift = redshift_worker.Redshift_Worker(my_mock)
+        redshift.render_frames()
 
         files=glob.glob(frames+'*')
         self.assertTrue(len(files)==3)

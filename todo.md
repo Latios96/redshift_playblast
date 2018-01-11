@@ -1,6 +1,7 @@
 # TODO
 - Readme
 - remove dependency from ktrack meta
+- hooks
 - proper Deadline Plugin: tests, settings für ffmpeg path, maya path, playblast.py script, ffmpeg settings
 - option to remove temp png images
 - the playblaster should control ffmpeg and not the Deadline Plugin

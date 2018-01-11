@@ -5,6 +5,8 @@ import tempfile
 
 from Qt import QtCore
 
+from redshift_playblast.hooks import hooks
+
 logger = logging.getLogger(__name__)
 
 class Playblast_Job(QtCore.QObject):
@@ -46,7 +48,7 @@ class Playblast_Job(QtCore.QObject):
         Submit job to deadline
         :return:
         """
-        print "submitting to deadline"
+        logger.info("submitting to deadline")
         PLUGIN_INFO_PATH=os.path.join(tempfile.gettempdir(), "redshift_playblast_pluginInfo.job")
         JOB_INFO_PATH = os.path.join(tempfile.gettempdir(), "redshift_playblast_jobInfo.job")
 
@@ -67,6 +69,10 @@ class Playblast_Job(QtCore.QObject):
         plugin_info_file.write("{0}={1}\n".format('quality', self.quality))
         for key, value in self.context.iteritems():
             plugin_info_file.write("ktrack_{0}={1}\n".format(key, value))
+
+        logger.info("Executing hook deadline_plugin_info_file..")
+        hooks.deadline_plugin_info_file(plugin_info_file)
+
         plugin_info_file.close()
 
         #write job info
@@ -79,6 +85,9 @@ class Playblast_Job(QtCore.QObject):
         job_info_file.write("{0}={1}\n".format('OutputDirectory0', os.path.dirname(self.frame_path)))
         job_info_file.write("{0}={1}\n".format('OutputFilename0', os.path.basename(self.frame_path)))
         job_info_file.write("PostJobScript=M:/Projekte/z_pipeline/Deadline10/custom/scripts/Jobs/create_upload_playblast.py")
+
+        logger.info("Executing hook job_info_file..")
+        hooks.deadline_job_info_file(job_info_file)
 
         job_info_file.close()
 
