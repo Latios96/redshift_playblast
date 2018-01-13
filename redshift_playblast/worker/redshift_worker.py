@@ -147,16 +147,17 @@ class Redshift_Worker(object):
         Renders all frames and creates Quicktime after that. Will remove rendered images
         :return: path to created Quicktime
         """
-        frame_range=range(self.start_frame, self.end_frame+1)
-        logger.info("Rendering range %s", frame_range)
+        frame_range=range(int(self.start_frame), int(self.end_frame)+1)
+        logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame)+1)
 
         for i in frame_range:
             self._render_frame(i)
         return self._create_quicktime()
 
     def _create_quicktime(self):
+        #todo add information about Quicktime to docs
         """
-        Uses ffmpeg to create Quicktime from rendered images. Images will be deleted after Quicktime creation
+        Uses ffmpeg to create Quicktime from rendered images. Images will be deleted after Quicktime creation.
         :return: path to created Quicktime
         """
         start_frame=str(self.start_frame)

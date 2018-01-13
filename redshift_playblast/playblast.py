@@ -1,4 +1,7 @@
 import argparse
+#we have to import pymel here, because otherwise maya does not setup the PYTHONPATH from maya.env
+import pymel.core as pm
+
 from redshift_playblast.worker import redshift_worker
 
 

@@ -1,9 +1,8 @@
 # TODO
 - Readme
 - hooks
-- support ffmpeg not in path
-- proper Deadline Plugin: tests, settings für ffmpeg path, maya path, playblast.py script, ffmpeg settings
-- option to remove temp png images
+- proper Deadline Plugin: tests, maya path, playblast.py script
+- documentation
 - do local playblast in current maya scene
 - QC Renders for Alembics and VDBs
 ## install script

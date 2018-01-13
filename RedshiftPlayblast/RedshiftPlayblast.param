@@ -1,0 +1,21 @@
+[About]
+Type=label
+Label=About
+Category=About Plugin
+CategoryOrder=-1
+Default=An example of a custom Plugin
+Description=Not configurable
+
+[ConcurrentTasks]
+Type=label
+Label=ConcurrentTasks
+Category=About Plugin
+CategoryOrder=-1
+Default=True
+Description=Not configurable
+
+[MyPluginRenderExecutable]
+Type=filename
+Label=My Plugin Render Executable
+Default=c:\path\to\my\executable.exe
+Description=The path to the executable file used for rendering.

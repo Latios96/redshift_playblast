@@ -16,7 +16,8 @@ Use install script. This will guide you through the installation
 pip install git+ssh://git@github.com/Latios96/ktrack_metadata.git
 ```
 
-# Usage 
+# Usage
+Run inside Maya 
 ```sh
 some python code
 ```
