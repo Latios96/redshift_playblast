@@ -5,6 +5,8 @@
 - documentation
 - do local playblast in current maya scene
 - QC Renders for Alembics and VDBs
+- demo video
+- shader override (Ambient Occlusion, greyscale, etc)
 ## install script
 cmd line script:
 - fragt nach Ordner im Maya [Script_Path oder PythonPath] und kopiert playblast module dahin 

@@ -1,3 +1,5 @@
+import Deadline
+print Deadline.__file__
 from Deadline.Plugins import *
 import os
 ######################################################################
@@ -49,7 +51,7 @@ class RedshiftPlayblastPlugin (DeadlinePlugin):
     def RenderArgument(self):
         renderArguments= r"M:\workspace\redshift_playblast\redshift_playblast\playblast.py"
         print "getting file path"
-        renderArguments+=' -file_path {0}'.format(self.GetPluginInfoEntry('file_path')) 
+        renderArguments+=' -file_path "{0}"'.format(self.GetPluginInfoEntry('file_path')) 
 
         print "getting start_frame"
         renderArguments+=' -start_frame {0}'.format(self.GetPluginInfoEntry('start_frame')) 
@@ -67,7 +69,7 @@ class RedshiftPlayblastPlugin (DeadlinePlugin):
         job=self.GetJob()
         print job.GetJobInfoKeyValue('OutputDirectory0')
         print job.GetJobInfoKeyValue('OutputFilename0')
-        renderArguments+=' -frame_path {0}'.format(os.path.join(job.GetJobInfoKeyValue('OutputDirectory0'), job.GetJobInfoKeyValue('OutputFilename0')))
+        renderArguments+=' -frame_path "{0}"'.format(os.path.join(job.GetJobInfoKeyValue('OutputDirectory0'), job.GetJobInfoKeyValue('OutputFilename0')))
 
         print "getting camera"
         renderArguments+=' -camera {0}'.format(self.GetPluginInfoEntry('camera')) 
@@ -79,6 +81,6 @@ class RedshiftPlayblastPlugin (DeadlinePlugin):
         renderArguments+=' -motion-blur {0}'.format(self.GetPluginInfoEntry('motion_blur')) 
 
         print "getting file path"
-        renderArguments+=' -quality {0}'.format(self.GetPluginInfoEntry('quality')) 
+        renderArguments+=' -quality "{0}"'.format(self.GetPluginInfoEntry('quality')) 
 
         return renderArguments
