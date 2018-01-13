@@ -1,7 +1,7 @@
 # TODO
 - Readme
 - hooks
-- the playblaster should control ffmpeg and not the Deadline Plugin
+- support ffmpeg not in path
 - proper Deadline Plugin: tests, settings für ffmpeg path, maya path, playblast.py script, ffmpeg settings
 - option to remove temp png images
 - do local playblast in current maya scene

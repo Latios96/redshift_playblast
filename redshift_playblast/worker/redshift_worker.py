@@ -1,7 +1,16 @@
+import glob
 import logging
+import subprocess
 
+import os
 import pymel.core as pm
 import maya.mel as mel
+
+from redshift_playblast.hooks import hooks
+
+MOVIE_EXTENSION = ".mov"
+
+FRAME_EXTENSION = ".png"
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +91,8 @@ class Redshift_Worker(object):
             raise ObjectNotExistsError(error)
 
     def set_start_end_frame(self, start_frame, end_frame):
+        self.start_frame=start_frame
+        self.end_frame = end_frame
         logger.info("settings start and end frame to %s, %s", start_frame, end_frame)
         self._get_object_by_name("defaultRenderGlobals").startFrame.set(start_frame)
         self._get_object_by_name("defaultRenderGlobals").endFrame.set(end_frame)
@@ -93,6 +104,7 @@ class Redshift_Worker(object):
         default_resolution.height.set(height)
 
     def set_frame_path(self, frame_path):
+        self.frame_path=frame_path
         logger.info("set frame path to %s", frame_path)
         logger.info("replaced path to %s", frame_path.replace("_####.png", ""))
         self._get_object_by_name('defaultRenderGlobals').imageFilePrefix.set(frame_path.replace(".####.png", ""))
@@ -117,7 +129,7 @@ class Redshift_Worker(object):
         self._get_object_by_name("redshiftOptions").unifiedMaxSamples.set(QUALITY_PRESETS[quality.lower()]['max_samples'])
         self._get_object_by_name("redshiftOptions").unifiedAdaptiveErrorThreshold.set(QUALITY_PRESETS[quality.lower()]['threshold'])
 
-    def render_frame(self, frame_number):
+    def _render_frame(self, frame_number):
         """
         renders frame with given number
         :return:
@@ -132,10 +144,41 @@ class Redshift_Worker(object):
 
     def render_frames(self):
         """
-        renders frame with given number
-        :return:
+        Renders all frames and creates Quicktime after that. Will remove rendered images
+        :return: path to created Quicktime
         """
-        mel.eval('mayaBatchRenderProcedure(0, "", "' + str('') + '", "' + 'redshift' + '", "")')
+        frame_range=range(self.start_frame, self.end_frame+1)
+        logger.info("Rendering range %s", frame_range)
+
+        for i in frame_range:
+            self._render_frame(i)
+        return self._create_quicktime()
+
+    def _create_quicktime(self):
+        """
+        Uses ffmpeg to create Quicktime from rendered images. Images will be deleted after Quicktime creation
+        :return: path to created Quicktime
+        """
+        start_frame=str(self.start_frame)
+        input_path=self.frame_path.replace('####', '%04d')
+        output_file= self.frame_path.replace('####', '').replace(FRAME_EXTENSION, MOVIE_EXTENSION)
+
+        convert_command = "{0}/ffmpeg.exe -apply_trc iec61966_2_1 -r 24 -start_number {1} -i {2} -vcodec libx264 -pix_fmt yuv420p -profile:v high -level 4.0 -preset medium -bf 0 {3}".format(hooks.get_ffmpeg_folder(), start_frame, input_path, output_file)
+
+        logger.info("generating quicktime...")
+        logger.info(convert_command)
+
+        subprocess.call(convert_command)
+
+        logger.info("Quicktime was created")
+
+        logger.info("deleting pngs...")
+        for image_path in glob.glob(input_path.replace('%04d', '*')):
+            os.remove(image_path)
+
+        logger.info("pngs deleted")
+
+        return output_file
 
 
 class ObjectNotExistsError(Exception):

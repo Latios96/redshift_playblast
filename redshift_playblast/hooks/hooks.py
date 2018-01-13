@@ -19,3 +19,10 @@ def deadline_job_info_file(file_handle):
     :return:
     """
     pass
+
+def get_ffmpeg_folder():
+    """
+    Returns the path to the folder containing the ffmpeg executable
+    :return:
+    """
+    return 'C:/ffmpeg/bin'

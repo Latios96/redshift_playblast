@@ -118,7 +118,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
         :return:
         """
         argparse_mock = Mock()
-        frames=get_resource('test_render_{0}'.format(str(uuid.uuid4()).split('-')[0]))
+        frames=get_resource('test_render_{0}.####.png'.format(str(uuid.uuid4()).split('-')[0]))
         my_mock = construct_args_mock(file_path=get_resource('test_scene_cube_no_redshift.ma'),
                                       start_frame=1,
                                       end_frame=3,
@@ -127,13 +127,11 @@ class Redshift_Playblast_Test(unittest.TestCase):
                                       )
 
         redshift = redshift_worker.Redshift_Worker(my_mock)
-        redshift.render_frames()
+        quicktime_path=redshift.render_frames()
 
-        files=glob.glob(frames+'*')
-        self.assertTrue(len(files)==3)
+        self.assertTrue(os.path.exists(quicktime_path))
 
-        for f in files:
-            os.remove(f)
+        os.remove(quicktime_path)
 
 
 
