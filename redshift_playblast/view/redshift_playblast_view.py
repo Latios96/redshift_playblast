@@ -141,6 +141,15 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self._ui.btnSubmit.clicked.connect(self.maya_manager.submit)
         self.update_view()
 
+        #tab order
+        self.setTabOrder(self._ui.txtStartFrame, self._ui.txtEndFrame)
+        self.setTabOrder(self._ui.txtEndFrame, self._ui.txtWidth)
+        self.setTabOrder(self._ui.txtWidth, self._ui.txtHeight)
+        self.setTabOrder(self._ui.txtHeight, self._ui.txtOutput)
+        self.setTabOrder(self._ui.txtOutput, self._ui.btnSubmit)
+        self.setTabOrder(self._ui.btnSubmit, self._ui.txtStartFrame)
+
+
     def loadUiWidget(self, uifilename, parent=None):
         loader = QtUiTools.QUiLoader()
         uifile = QtCore.QFile(uifilename)
