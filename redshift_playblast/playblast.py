@@ -23,6 +23,7 @@ def main():
     parser.add_argument('-dof', help='Use DOF or not')
     parser.add_argument('-motion-blur', help='Use Motion Blur or not')
     parser.add_argument('-quality', help='Quality, LOW, MED or HIGH')
+    parser.add_argument('-shader_override_type', help='shader override')
 
     args = parser.parse_args()
 
@@ -34,6 +35,7 @@ def main():
     #convert args to correct data types
     args.start_frame=float(args.start_frame)
     args.end_frame = float(args.end_frame)
+    args.shader_override_type=int(args.shader_override_type)
     args.width=int(args.width)
     args.height = int(args.height)
     args.motion_blur=True if 'True' in args.motion_blur else False

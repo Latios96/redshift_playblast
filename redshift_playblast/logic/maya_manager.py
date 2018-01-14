@@ -55,39 +55,56 @@ class Maya_Manager(object):
                 self.job.start_frame=0
             else:
                 self.job.start_frame=int(value)
+
+                #make sure that start frame cant be bigger than end frame
+                if self.job.start_frame>self.job.end_frame:
+                    self.job.end_frame=self.job.start_frame
+
                 self.job.data_changed.emit()
+
         elif value_name=='end_frame':
             if value == "":
                 self.job.end_frame =0
             else:
                 self.job.end_frame=int(value)
                 self.job.data_changed.emit()
+
         elif value_name=='width':
             if value == "":
                 self.job.width=0
             else:
                 self.job.width=int(value)
                 self.job.data_changed.emit()
+
         elif value_name=='height':
             if value == "":
                 self.job.height =0
             else:
                 self.job.height=int(value)
                 self.job.data_changed.emit()
+
         elif value_name=='camera':
             print value
             self.job.camera=pm.ls(value)[0]
             #self.job.data_changed.emit()
+
         elif value_name=='dof':
             self.job.dof=True if value==QtCore.Qt.CheckState.Checked else False
             self.job.data_changed.emit()
+
         elif value_name=='motion_blur':
             self.job.motion_blur=True if value==QtCore.Qt.CheckState.Checked else False
             self.job.data_changed.emit()
+
         elif value_name=='quality':
             print value
             self.job.quality=value
             #self.job.data_changed.emit()
+
+        elif value_name=='shader_override_type':
+            self.job.shader_override_type=value
+            #self.job.data_changed.emit()
+
         else:
             error="Unsupported Parameter: "+value_name
             raise Exception(error)

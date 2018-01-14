@@ -9,6 +9,8 @@ import sys
 import os
 import platform
 
+from redshift_playblast.model.shader_override_types import Shader_Override_Type
+
 sys.dont_write_bytecode = True  # Avoid writing .pyc files
 
 # ----------------------------------------------------------------------
@@ -115,7 +117,7 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self.setCentralWidget(self._ui)
 
         # Define minimum size of UI
-        self.setMinimumSize(380, 356)
+        self.setMinimumSize(380, 457)
 
         self.maya_manager=maya_manager.Maya_Manager()
         # Signals
@@ -130,6 +132,8 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self._ui.chBxDof.stateChanged.connect(lambda x: self.maya_manager.set_job_value('dof', x))
 
         self._ui.cmbxQuality.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('quality', self._ui.cmbxQuality.currentText()))
+
+        self._ui.cmbxShaderOverride.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('shader_override_type', Shader_Override_Type.value(self._ui.cmbxShaderOverride.currentText())))
 
         self._ui.btnSubmit.clicked.connect(self.maya_manager.submit)
         self.update_view()
@@ -158,12 +162,24 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         for camera in job.avaible_cameras:
             self._ui.cmBxCamera.addItem(camera.name())
         self._ui.cmBxCamera.setCurrentIndex(self._ui.cmBxCamera.findText(old_cam))
+
         self._ui.chBxMotionBlur.setCheckState(QtCore.Qt.CheckState.Checked if job.motion_blur else QtCore.Qt.CheckState.Unchecked)
         self._ui.chBxDof.setCheckState(QtCore.Qt.CheckState.Checked if job.dof else QtCore.Qt.CheckState.Unchecked)
 
         #output
         self._ui.cmbxQuality.setCurrentIndex(self._ui.cmbxQuality.findText(job.quality))
         self._ui.txtOutput.setText(job.frame_path)
+
+        #shader override
+        old_shader_override=job.shader_override_type
+        print old_shader_override
+        self._ui.cmbxShaderOverride.clear()
+
+        for number, nice_name in Shader_Override_Type.nice_names.iteritems():
+            self._ui.cmbxShaderOverride.addItem(nice_name)
+        self._ui.cmbxShaderOverride.setCurrentIndex(self._ui.cmbxShaderOverride.findText(Shader_Override_Type.nice_name(old_shader_override)))
+
+        self._ui.cmBxCamera.setCurrentIndex(self._ui.cmBxCamera.findText(old_cam))
 
 # ----------------------------------------------------------------------
 # DCC application helper functions

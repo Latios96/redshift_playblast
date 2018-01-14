@@ -7,6 +7,7 @@ import pymel.core as pm
 import maya.mel as mel
 
 from redshift_playblast.hooks import hooks
+from redshift_playblast.model.shader_override_types import Shader_Override_Type
 
 MOVIE_EXTENSION = ".mov"
 
@@ -45,6 +46,9 @@ class Redshift_Worker(object):
         #TODO restore original values before job, needed to run job inside maya
         self.args=args
 
+        #load alembic plugin, can lead to problems with referenced alembics
+        pm.loadPlugin('AlembicImport')
+
         #load file
         if pm.sceneName is not self.args.file_path:
             pm.openFile(self.args.file_path, force=True)
@@ -75,6 +79,8 @@ class Redshift_Worker(object):
         self.set_motion_blur(self.args.motion_blur)
 
         self.set_quality(self.args.quality)
+
+        self.create_shader_override(args.shader_override_type)
 
     def _get_object_by_name(self, name):
         """
@@ -164,7 +170,7 @@ class Redshift_Worker(object):
         input_path=self.frame_path.replace('####', '%04d')
         output_file= self.frame_path.replace('####', '').replace(FRAME_EXTENSION, MOVIE_EXTENSION)
 
-        convert_command = "{0}/ffmpeg.exe -apply_trc iec61966_2_1 -r 24 -start_number {1} -i {2} -vcodec libx264 -pix_fmt yuv420p -profile:v high -level 4.0 -preset medium -bf 0 {3}".format(hooks.get_ffmpeg_folder(), start_frame, input_path, output_file)
+        convert_command = '{0}/ffmpeg.exe -apply_trc iec61966_2_1 -r 24 -start_number {1} -i "{2}" -vcodec libx264 -pix_fmt yuv420p -profile:v high -level 4.0 -preset medium -bf 0 "{3}"'.format(hooks.get_ffmpeg_folder(), start_frame, input_path, output_file)
 
         logger.info("generating quicktime...")
         logger.info(convert_command)
@@ -181,6 +187,39 @@ class Redshift_Worker(object):
 
         return output_file
 
+    def create_shader_override(self, shader_type=Shader_Override_Type.AMBIENT_OCCLUSION):
+        #AMBIENT_OCCLUSION
+        if shader_type==Shader_Override_Type.AMBIENT_OCCLUSION:
+            logger.info("creating shader override %s", Shader_Override_Type.AMBIENT_OCCLUSION)
+
+            surfaceShader = pm.createNode('surfaceShader')
+
+            ao_shader = pm.createNode('RedshiftAmbientOcclusion')
+
+            ao_shader.outColor.connect(surfaceShader.outColor)
+
+            for shadingGroup in pm.ls(type='shadingEngine'):
+                shadingGroup.surfaceShader.disconnect()
+                surfaceShader.outColor.connect(shadingGroup.surfaceShader)
+
+        #GREYSCALE
+        elif shader_type==Shader_Override_Type.GREYSCALE:
+            redshift_material = pm.createNode('RedshiftMaterial')
+            redshift_material.refl_weight.set(0)
+            redshift_material.refl_color.set((0, 0, 0))
+
+            for shadingGroup in pm.ls(type='shadingEngine'):
+                shadingGroup.surfaceShader.disconnect()
+                redshift_material.outColor.connect(shadingGroup.surfaceShader)
+
+        #PRODUCTION_SHADER
+        elif shader_type==Shader_Override_Type.PRODUCTION_SHADER:
+            logger.info("creating shader override %s", Shader_Override_Type.PRODUCTION_SHADER)
+            hooks.assign_production_shader()
+
+        #NO_OVERRIDE
+        else:
+            logger.info("creating shader override %s", Shader_Override_Type.NO_OVERRIDE)
 
 class ObjectNotExistsError(Exception):
     """

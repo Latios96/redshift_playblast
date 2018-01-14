@@ -26,3 +26,10 @@ def get_ffmpeg_folder():
     :return:
     """
     return 'C:/ffmpeg/bin'
+
+def assign_production_shader():
+    """
+    Called when Shader override type is set to PRODUCTION_SHADER. Place your logic to get production shaders and assignment here
+    :return:
+    """
+    logger.info("Assigning production shaders...")

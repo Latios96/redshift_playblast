@@ -1,12 +1,18 @@
 # TODO
 - Readme
 - hooks
+- hook for image location
+- exception when ffmpeg ist not found
+- redshift worker: use playblast_job instead of args
+- playblast_job: illegal_argument exceptions
+- edit context to restore old state: createNode, setAttr, connectAttr, disconnectAttr
+- fix tab order for frame range in UI
+- UI: Buttons for 'from scene range' for frame range and 'from render settings' for resolution
 - proper Deadline Plugin: tests, maya path, playblast.py script
 - documentation
 - do local playblast in current maya scene
 - QC Renders for Alembics and VDBs
 - demo video
-- shader override (Ambient Occlusion, greyscale, etc)
 ## install script
 cmd line script:
 - fragt nach Ordner im Maya [Script_Path oder PythonPath] und kopiert playblast module dahin 

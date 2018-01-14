@@ -13,7 +13,7 @@ class Playblast_Job(QtCore.QObject):
 
     data_changed=QtCore.Signal()
 
-    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, avaible_cameras=[]):
+    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, avaible_cameras=[], shader_override_type="NO_OVERRIDE"):
         super(Playblast_Job, self).__init__()
         self.file_path=file_path
         self.start_frame=start_frame
@@ -26,6 +26,7 @@ class Playblast_Job(QtCore.QObject):
         self.dof=dof
         self.motion_blur=motion_blur
         self.quality=quality
+        self.shader_override_type = shader_override_type
         self.avaible_cameras=avaible_cameras
 
     def ___str__(self):
@@ -40,6 +41,7 @@ class Playblast_Job(QtCore.QObject):
         string+="{0}={1}\n".format('dof', self.dof)
         string+="{0}={1}\n".format('motion_blur', self.motion_blur)
         string+="{0}={1}\n".format('quality', self.quality)
+        string += "{0}={1}\n".format('shader_override_type', self.shader_override_type)
         return string
 
     def submit_to_deadline(self):
@@ -66,6 +68,7 @@ class Playblast_Job(QtCore.QObject):
         plugin_info_file.write("{0}={1}\n".format('dof', self.dof))
         plugin_info_file.write("{0}={1}\n".format('motion_blur', self.motion_blur))
         plugin_info_file.write("{0}={1}\n".format('quality', self.quality))
+        plugin_info_file.write("{0}={1}\n".format('shader_override_type', self.shader_override_type))
 
         logger.info("Executing hook deadline_plugin_info_file..")
         hooks.deadline_plugin_info_file(plugin_info_file)
@@ -81,7 +84,6 @@ class Playblast_Job(QtCore.QObject):
         job_info_file.write("{0}={1}\n".format('Frames', self.start_frame))
         job_info_file.write("{0}={1}\n".format('OutputDirectory0', os.path.dirname(self.frame_path)))
         job_info_file.write("{0}={1}\n".format('OutputFilename0', os.path.basename(self.frame_path)))
-        job_info_file.write("PostJobScript=M:/Projekte/z_pipeline/Deadline10/custom/scripts/Jobs/create_upload_playblast.py")
 
         logger.info("Executing hook job_info_file..")
         hooks.deadline_job_info_file(job_info_file)
