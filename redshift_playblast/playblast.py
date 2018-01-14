@@ -1,4 +1,5 @@
 import argparse
+import pymel.core as pm
 
 from redshift_playblast.logic import redshift_worker
 from redshift_playblast.model.playblast_job import Playblast_Job

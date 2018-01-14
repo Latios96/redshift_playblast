@@ -1,5 +1,8 @@
 import logging
 import os
+
+from redshift_playblast.logic.redshift_worker import Redshift_Worker
+
 logger = logging.getLogger(__name__)
 
 import pymel.core as pm
@@ -42,8 +45,21 @@ class Maya_Manager(object):
     def get_avaible_cameras(self):
         return [x.parent(0) for x in pm.ls(type='camera')]
 
-    def submit(self):
-        self.job.submit_to_deadline()
+    def createPlayblast(self):
+        if self.job.local_mode:
+            worker=Redshift_Worker(self.job)
+            worker.render_frames()
+        else:
+            self.job.submit_to_deadline()
+
+    def apply_scene_range(self):
+        self.set_job_value('start_frame', int(pm.playbackOptions(minTime=True, query=True)))
+        self.set_job_value('end_frame', int(pm.playbackOptions(maxTime=True, query=True)))
+
+    def apply_render_settings_resolution(self):
+        default_resolution = pm.ls('defaultResolution')[0]
+        self.set_job_value('width', default_resolution.width.get())
+        self.set_job_value('height', default_resolution.height.get())
 
     def set_job_value(self, value_name, value):
         """
@@ -106,7 +122,9 @@ class Maya_Manager(object):
         elif value_name=='shader_override_type':
             self.job.shader_override_type=value
             #self.job.data_changed.emit()
-
+        elif value_name=='local_mode':
+            self.job.local_mode=value
+            self.job.data_changed.emit()
         else:
             error="Unsupported Parameter: "+value_name
             raise Exception(error)

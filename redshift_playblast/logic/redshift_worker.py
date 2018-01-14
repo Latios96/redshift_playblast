@@ -3,10 +3,13 @@ import logging
 import subprocess
 
 import os
+import webbrowser
+
 import pymel.core as pm
 import maya.mel as mel
 
 from redshift_playblast.hooks import hooks
+from redshift_playblast.logic.edit_context import get_edit_context
 from redshift_playblast.model.shader_override_types import Shader_Override_Type
 
 MOVIE_EXTENSION = ".mov"
@@ -43,6 +46,7 @@ class Redshift_Worker(object):
 
     def __init__(self, args):
         #TODO validate args
+        #todo rename args to job here
         #TODO restore original values after job, needed to run job inside maya
         self.args=args
 
@@ -50,7 +54,7 @@ class Redshift_Worker(object):
         pm.loadPlugin('AbcImport')
 
         #load file
-        if pm.sceneName is not self.args.file_path:
+        if not args.local_mode:
             pm.openFile(self.args.file_path, force=True)
 
         # load redshift plugin
@@ -79,8 +83,6 @@ class Redshift_Worker(object):
         self.set_motion_blur(self.args.motion_blur)
 
         self.set_quality(self.args.quality)
-
-        self.create_shader_override(args.shader_override_type)
 
     def _get_object_by_name(self, name):
         """
@@ -135,30 +137,34 @@ class Redshift_Worker(object):
         self._get_object_by_name("redshiftOptions").unifiedMaxSamples.set(QUALITY_PRESETS[quality.lower()]['max_samples'])
         self._get_object_by_name("redshiftOptions").unifiedAdaptiveErrorThreshold.set(QUALITY_PRESETS[quality.lower()]['threshold'])
 
-    def _render_frame(self, frame_number):
-        """
-        renders frame with given number
-        :return:
-        """
-        old_start=self._get_object_by_name("defaultRenderGlobals").startFrame.get()
-        old_end = self._get_object_by_name("defaultRenderGlobals").endFrame.get()
-        self._get_object_by_name("defaultRenderGlobals").startFrame.set(frame_number)
-        self._get_object_by_name("defaultRenderGlobals").endFrame.set(frame_number)
-        mel.eval('mayaBatchRenderProcedure(0, "", "' + str('') + '", "' + 'redshift' + '", "")')
-        self._get_object_by_name("defaultRenderGlobals").startFrame.set(old_start)
-        self._get_object_by_name("defaultRenderGlobals").endFrame.set(old_end)
 
     def render_frames(self):
         """
         Renders all frames and creates Quicktime after that. Will remove rendered images
         :return: path to created Quicktime
         """
-        frame_range=range(int(self.start_frame), int(self.end_frame)+1)
         logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame)+1)
 
-        for i in frame_range:
-            self._render_frame(i)
-        return self._create_quicktime()
+        with get_edit_context() as context:
+            #create shader overrides
+            self.create_shader_override(context, self.args.shader_override_type)
+
+            old_start = self._get_object_by_name("defaultRenderGlobals").startFrame.get()
+            old_end = self._get_object_by_name("defaultRenderGlobals").endFrame.get()
+            self._get_object_by_name("defaultRenderGlobals").startFrame.set(self.start_frame)
+            self._get_object_by_name("defaultRenderGlobals").endFrame.set(self.end_frame)
+            mel.eval('mayaBatchRenderProcedure(0, "", "' + str('') + '", "' + 'redshift' + '", "")')
+            self._get_object_by_name("defaultRenderGlobals").startFrame.set(old_start)
+            self._get_object_by_name("defaultRenderGlobals").endFrame.set(old_end)
+
+        #path to created quicktime
+        quicktime=self._create_quicktime()
+
+        #if local mode, we open the quicktime afterwards
+        if self.args.local_mode:
+            webbrowser.open(quicktime)
+
+        return quicktime
 
     def _create_quicktime(self):
         #todo add information about Quicktime to docs
@@ -168,7 +174,7 @@ class Redshift_Worker(object):
         """
         start_frame=str(self.start_frame)
         input_path=self.frame_path.replace('####', '%04d')
-        output_file= self.frame_path.replace('####', '').replace(FRAME_EXTENSION, MOVIE_EXTENSION)
+        output_file= self.frame_path.replace('.####', '').replace(FRAME_EXTENSION, MOVIE_EXTENSION)
 
         convert_command = '{0}/ffmpeg.exe -apply_trc iec61966_2_1 -r 24 -start_number {1} -i "{2}" -vcodec libx264 -pix_fmt yuv420p -profile:v high -level 4.0 -preset medium -bf 0 "{3}"'.format(hooks.get_ffmpeg_folder(), start_frame, input_path, output_file)
 
@@ -187,20 +193,20 @@ class Redshift_Worker(object):
 
         return output_file
 
-    def create_shader_override(self, shader_type=Shader_Override_Type.AMBIENT_OCCLUSION):
+    def create_shader_override(self, context, shader_type=Shader_Override_Type.AMBIENT_OCCLUSION):
         #AMBIENT_OCCLUSION
         if shader_type==Shader_Override_Type.AMBIENT_OCCLUSION:
             logger.info("creating shader override %s", Shader_Override_Type.AMBIENT_OCCLUSION)
 
-            surfaceShader = pm.createNode('surfaceShader')
+            surfaceShader = context.createNode('surfaceShader')
 
-            ao_shader = pm.createNode('RedshiftAmbientOcclusion')
+            ao_shader = context.createNode('RedshiftAmbientOcclusion')
 
-            ao_shader.outColor.connect(surfaceShader.outColor)
+            context.connectAttr(ao_shader.outColor, surfaceShader.outColor)
 
             for shadingGroup in pm.ls(type='shadingEngine'):
-                shadingGroup.surfaceShader.disconnect()
-                surfaceShader.outColor.connect(shadingGroup.surfaceShader)
+                context.disconnectAttr(shadingGroup.surfaceShader)
+                context.connectAttr(surfaceShader.outColor, shadingGroup.surfaceShader)
 
         #GREYSCALE
         elif shader_type==Shader_Override_Type.GREYSCALE:

@@ -138,7 +138,13 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
 
         self._ui.cmbxShaderOverride.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('shader_override_type', Shader_Override_Type.value(self._ui.cmbxShaderOverride.currentText())))
 
-        self._ui.btnSubmit.clicked.connect(self.maya_manager.submit)
+        self._ui.radioRunInMaya.toggled.connect(lambda x: self.maya_manager.set_job_value('local_mode', self._ui.radioRunInMaya.isChecked()))
+        self._ui.radioRunOnRenderFarm.toggled.connect(lambda x: self.maya_manager.set_job_value('local_mode', self._ui.radioRunInMaya.isChecked()))
+
+        self._ui.btnCreatePlayblast.clicked.connect(self.maya_manager.createPlayblast)
+
+        self._ui.btnSceneRange.clicked.connect(lambda: self.maya_manager.apply_scene_range())
+        self._ui.btnRenderSettings.clicked.connect(lambda: self.maya_manager.apply_render_settings_resolution())
         self.update_view()
 
         #tab order
@@ -146,8 +152,8 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self.setTabOrder(self._ui.txtEndFrame, self._ui.txtWidth)
         self.setTabOrder(self._ui.txtWidth, self._ui.txtHeight)
         self.setTabOrder(self._ui.txtHeight, self._ui.txtOutput)
-        self.setTabOrder(self._ui.txtOutput, self._ui.btnSubmit)
-        self.setTabOrder(self._ui.btnSubmit, self._ui.txtStartFrame)
+        self.setTabOrder(self._ui.txtOutput, self._ui.btnCreatePlayblast)
+        self.setTabOrder(self._ui.btnCreatePlayblast, self._ui.txtStartFrame)
 
 
     def loadUiWidget(self, uifilename, parent=None):
@@ -192,6 +198,10 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self._ui.cmbxShaderOverride.setCurrentIndex(self._ui.cmbxShaderOverride.findText(Shader_Override_Type.nice_name(old_shader_override)))
 
         self._ui.cmBxCamera.setCurrentIndex(self._ui.cmBxCamera.findText(old_cam))
+
+        self._ui.radioRunInMaya.setChecked(job.local_mode)
+        self._ui.radioRunOnRenderFarm.setChecked(False if job.local_mode else True)
+
 
 # ----------------------------------------------------------------------
 # DCC application helper functions

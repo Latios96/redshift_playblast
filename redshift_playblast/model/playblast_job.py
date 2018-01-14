@@ -13,7 +13,7 @@ class Playblast_Job(QtCore.QObject):
 
     data_changed=QtCore.Signal()
 
-    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, avaible_cameras=[], shader_override_type=0):
+    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, avaible_cameras=[], shader_override_type=0, local_mode=True):
         """
         :param file_path: path to the Maya file to open
         :type file_path: str
@@ -41,6 +41,8 @@ class Playblast_Job(QtCore.QObject):
         :type avaible_cameras: list
         :param shader_override_type: type of Shader override applied when creating the playblast, see Shader_Override_Type
         :type shader_override_type: Shader_Override_Type
+        :param local_mode: If True, playblast will be done in current maya session
+        :type local_mode: bool
         """
         #todo validate supplied args
         super(Playblast_Job, self).__init__()
@@ -57,6 +59,7 @@ class Playblast_Job(QtCore.QObject):
         self.quality=quality
         self.shader_override_type = shader_override_type
         self.avaible_cameras=avaible_cameras
+        self.local_mode=local_mode
 
     def ___str__(self):
         string=""
@@ -71,6 +74,7 @@ class Playblast_Job(QtCore.QObject):
         string+="{0}={1}\n".format('motion_blur', self.motion_blur)
         string+="{0}={1}\n".format('quality', self.quality)
         string += "{0}={1}\n".format('shader_override_type', self.shader_override_type)
+        string += "{0}={1}\n".format('local_mode', self.local_mode)
         return string
 
     def submit_to_deadline(self):

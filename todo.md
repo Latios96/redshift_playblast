@@ -1,14 +1,31 @@
 # TODO
+- - do local playblast in current maya scene
+    ###todo
+    - rename worker.render_frames() to create_playblast
+    - call redshift worker in current session
+    - ask for save
+    ###done
+    - edit context to restore old state: createNode, setAttr, connectAttr, disconnectAttr
+    - rename "submit" button and methods to "Create Playblast"
+    - add "local" or "renderfarm" radio button to UI
+    - add local or renderfarm to playblast job
+    - tooltips for maya buttons
+    - UI: Buttons for 'from scene range' for frame range and 'from render settings' for resolution
+
+-ffmpeg override file    
+- support unsaved file
+- disable viewport
+- support current render layer
 - Readme
-- hooks
+- hooks oder OOP?
 - hook for image location
 - exception when ffmpeg ist not found
 - playblast_job: illegal_argument exceptions
-- edit context to restore old state: createNode, setAttr, connectAttr, disconnectAttr
-- UI: Buttons for 'from scene range' for frame range and 'from render settings' for resolution
+
+- fix deadline progress
 - proper Deadline Plugin: tests, maya path, playblast.py script
 - documentation
-- do local playblast in current maya scene
+
 - QC Renders for Alembics and VDBs
 - demo video
 ## install script
