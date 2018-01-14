@@ -1,8 +1,10 @@
 import argparse
-#we have to import pymel here, because otherwise maya does not setup the PYTHONPATH from maya.env
-import pymel.core as pm
 
-from redshift_playblast.worker import redshift_worker
+from redshift_playblast.logic import redshift_worker
+from redshift_playblast.model.playblast_job import Playblast_Job
+
+
+# we have to import pymel here, because otherwise maya does not setup the PYTHONPATH from maya.env
 
 
 class PlayblastQualityError(Exception):
@@ -32,17 +34,24 @@ def main():
         error="Unsupported quality settings: "+args.quality+". Supported are LOW, MED or HIGH"
         raise PlayblastQualityError(error)
 
-    #convert args to correct data types
-    args.start_frame=float(args.start_frame)
-    args.end_frame = float(args.end_frame)
-    args.shader_override_type=int(args.shader_override_type)
-    args.width=int(args.width)
-    args.height = int(args.height)
-    args.motion_blur=True if 'True' in args.motion_blur else False
-    args.dof = True if 'True' in args.dof else False
+    #create job and convert args to correct data types
+
+    job=Playblast_Job(file_path=None,
+                      start_frame=float(args.start_frame),
+                      end_frame=float(args.end_frame),
+                      width=int(args.width),
+                      height=int(args.height),
+                      frame_path=None,
+                      movie_path=None,
+                      camera=None,
+                      dof=True if 'True' in args.dof else False,
+                      motion_blur=True if 'True' in args.motion_blur else False,
+                      quality=None,
+                      avaible_cameras=[],
+                      shader_override_type=int(args.shader_override_type))
 
 
-    renderer=redshift_worker.Redshift_Worker(args)
+    renderer = redshift_worker.Redshift_Worker(job)
 
     renderer.render_frames()
 

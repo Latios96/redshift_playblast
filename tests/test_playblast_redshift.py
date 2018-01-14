@@ -1,14 +1,12 @@
-import glob
-import unittest
-
 import os
+import unittest
 import uuid
 
 from mock import patch, Mock
-import sys
 
 from redshift_playblast import playblast
-from redshift_playblast.worker import redshift_worker
+from redshift_playblast.logic import redshift_worker
+
 
 def get_resource(name):
     return os.path.join(os.path.dirname(__file__), 'resources', name)
@@ -25,13 +23,14 @@ def construct_args_mock_cli(**kwargs):
     args_mock.dof = 'True'
     args_mock.motion_blur='True'
     args_mock.quality='low'
+    args_mock.shader_override_type = 0
 
     for key, value in kwargs.iteritems():
         setattr(args_mock, key, value)
 
     return args_mock
 
-def construct_args_mock(**kwargs):
+def construct_job_mock(**kwargs):
     args_mock=Mock()
     args_mock.start_frame = 1
     args_mock.end_frame = 2
@@ -43,6 +42,7 @@ def construct_args_mock(**kwargs):
     args_mock.dof = True
     args_mock.motion_blur=True
     args_mock.quality='low'
+    args_mock.shader_override_type=0
 
     for key, value in kwargs.iteritems():
         setattr(args_mock, key, value)
@@ -67,7 +67,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
         with self.assertRaises(playblast.PlayblastQualityError):
             playblast.main()
 
-    @patch('redshift_playblast.worker.redshift_worker.Redshift_Worker')
+    @patch('redshift_playblast.logic.redshift_worker.Redshift_Worker')
     @patch('argparse.ArgumentParser.parse_args')
     def test_spelling_robustness(self, argparse_mock,redshift_mock):
         """
@@ -90,7 +90,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
         """
 
         argparse_mock = Mock()
-        my_mock = construct_args_mock()
+        my_mock = construct_job_mock()
 
         redshift = redshift_worker.Redshift_Worker(my_mock)
 
@@ -107,7 +107,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
         :return:
         """
         argparse_mock=Mock()
-        my_mock = construct_args_mock()
+        my_mock = construct_job_mock()
         redshift = redshift_worker.Redshift_Worker(my_mock)
 
         #now check correctness of values
@@ -119,7 +119,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
         """
         argparse_mock = Mock()
         frames=get_resource('test_render_{0}.####.png'.format(str(uuid.uuid4()).split('-')[0]))
-        my_mock = construct_args_mock(file_path=get_resource('test_scene_cube_no_redshift.ma'),
+        my_mock = construct_job_mock(file_path=get_resource('test_scene_cube_no_redshift.ma'),
                                       start_frame=1,
                                       end_frame=3,
                                       frame_path=frames,

@@ -13,7 +13,36 @@ class Playblast_Job(QtCore.QObject):
 
     data_changed=QtCore.Signal()
 
-    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, avaible_cameras=[], shader_override_type="NO_OVERRIDE"):
+    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, avaible_cameras=[], shader_override_type=0):
+        """
+        :param file_path: path to the Maya file to open
+        :type file_path: str
+        :param start_frame: first frame of frame range
+        :type start_frame: float
+        :param end_frame: last frame of frame range
+        :type end_frame: float
+        :param width: width of resulting playblast
+        :type width: int
+        :param height: height of resulting playblast
+        :type height: int
+        :param frame_path: path where to put the temp frames
+        :type frame_path: str
+        :param movie_path: path where to put the final movie file
+        :type movie_path: str
+        :param camera: camera to playblast, expected to be a pymel transform
+        :type camera: pymel.core.nodetypes.Transform
+        :param dof: If True, playblast will contain dof
+        :type dof: bool
+        :param motion_blur: If True, playblast will contain motion_blur
+        :type motion_blur: bool
+        :param quality: quality of the playblast, valid values are low, med, high
+        :type quality: str
+        :param avaible_cameras: list of all avaible cameras in current scene
+        :type avaible_cameras: list
+        :param shader_override_type: type of Shader override applied when creating the playblast, see Shader_Override_Type
+        :type shader_override_type: Shader_Override_Type
+        """
+        #todo validate supplied args
         super(Playblast_Job, self).__init__()
         self.file_path=file_path
         self.start_frame=start_frame

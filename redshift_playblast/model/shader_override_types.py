@@ -1,8 +1,11 @@
 class Shader_Override_Type(object):
-    NO_OVERRIDE = 0
-    AMBIENT_OCCLUSION = 1
-    GREYSCALE = 2
-    PRODUCTION_SHADER = 3
+    """
+    Helpers class for shader override types
+    """
+    NO_OVERRIDE = 0 # no shading override is applied and the scene is playblasted with the current shading
+    AMBIENT_OCCLUSION = 1 #an ambient occlusion shader is applied to all objects in scene
+    GREYSCALE = 2 #a greyscale shader is applied to all objects in scene
+    PRODUCTION_SHADER = 3 #the assign_production_shader hook will be called to assign your profuction shaders
 
     nice_names={NO_OVERRIDE: 'no override',
                  AMBIENT_OCCLUSION: 'Ambient Occlusion',

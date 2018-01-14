@@ -79,7 +79,10 @@ if REPO_PATH not in sys.path:
 
 from Qt import QtWidgets  # pylint: disable=E0611
 from Qt import QtCore  # pylint: disable=E0611
-from Qt import QtUiTools
+try:
+    from Qt import QtUiTools
+except:
+    from PySide2 import QtUiTools
 from redshift_playblast.logic import maya_manager
 
 # Debug
@@ -128,8 +131,8 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self._ui.txtHeight.textChanged.connect(lambda x: self.maya_manager.set_job_value('height', x))
 
         self._ui.cmBxCamera.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('camera', self._ui.cmBxCamera.currentText()))
-        self._ui.chBxMotionBlur.stateChanged.connect(lambda x: self.maya_manager.set_job_value('motion_blur', x))
-        self._ui.chBxDof.stateChanged.connect(lambda x: self.maya_manager.set_job_value('dof', x))
+        self._ui.chBxMotionBlur.stateChanged.connect(lambda x: self.maya_manager.set_job_value('motion_blur', x==QtCore.Qt.CheckState.Checked))
+        self._ui.chBxDof.stateChanged.connect(lambda x: self.maya_manager.set_job_value('dof', x==QtCore.Qt.CheckState.Checked))
 
         self._ui.cmbxQuality.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('quality', self._ui.cmbxQuality.currentText()))
 

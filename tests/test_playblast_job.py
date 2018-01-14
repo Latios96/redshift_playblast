@@ -11,7 +11,7 @@ def get_resource(name):
 
 class MyTestCase(unittest.TestCase):
     @patch('subprocess.check_output')
-    def test_submit(self, subprocess_mock):
+    def test_submit_no_real_file(self, subprocess_mock):
         job = playblast_job.Playblast_Job(file_path='test_file_path',
                                           start_frame=1000,
                                           end_frame=1100,

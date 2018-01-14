@@ -1,4 +1,6 @@
+import logging
 import os
+logger = logging.getLogger(__name__)
 
 import pymel.core as pm
 from Qt import QtCore
@@ -89,11 +91,11 @@ class Maya_Manager(object):
             #self.job.data_changed.emit()
 
         elif value_name=='dof':
-            self.job.dof=True if value==QtCore.Qt.CheckState.Checked else False
+            self.job.dof=value
             self.job.data_changed.emit()
 
         elif value_name=='motion_blur':
-            self.job.motion_blur=True if value==QtCore.Qt.CheckState.Checked else False
+            self.job.motion_blur=value
             self.job.data_changed.emit()
 
         elif value_name=='quality':
@@ -108,7 +110,7 @@ class Maya_Manager(object):
         else:
             error="Unsupported Parameter: "+value_name
             raise Exception(error)
-        print self.job.___str__()
+        logger.debug(self.job.___str__())
 
 
 

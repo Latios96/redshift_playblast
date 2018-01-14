@@ -43,11 +43,11 @@ class Redshift_Worker(object):
 
     def __init__(self, args):
         #TODO validate args
-        #TODO restore original values before job, needed to run job inside maya
+        #TODO restore original values after job, needed to run job inside maya
         self.args=args
 
         #load alembic plugin, can lead to problems with referenced alembics
-        pm.loadPlugin('AlembicImport')
+        pm.loadPlugin('AbcImport')
 
         #load file
         if pm.sceneName is not self.args.file_path:
