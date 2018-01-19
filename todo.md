@@ -1,10 +1,17 @@
 # TODO
 - - do local playblast in current maya scene
     ###todo
-    - rename worker.render_frames() to create_playblast
-    - call redshift worker in current session
-    - ask for save
+    - ask for save???
+    - edit context for everything in redshift worker. also motion blur and depth of field
+    - progress bar
+    - rewrite ui using Qt Models
+    - redshift worker should use movie path of job
+    - untitled file sc
     ###done
+    - rename worker.render_frames() to create_playblast
+    - add check for DG Evaluation Mode
+    - add check if file already exists
+    - call redshift worker in current session
     - edit context to restore old state: createNode, setAttr, connectAttr, disconnectAttr
     - rename "submit" button and methods to "Create Playblast"
     - add "local" or "renderfarm" radio button to UI
@@ -12,9 +19,8 @@
     - tooltips for maya buttons
     - UI: Buttons for 'from scene range' for frame range and 'from render settings' for resolution
 
--ffmpeg override file    
+- ffmpeg override file    
 - support unsaved file
-- disable viewport
 - support current render layer
 - Readme
 - hooks oder OOP?

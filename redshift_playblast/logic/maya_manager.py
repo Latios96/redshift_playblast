@@ -6,7 +6,7 @@ from redshift_playblast.logic.redshift_worker import Redshift_Worker
 logger = logging.getLogger(__name__)
 
 import pymel.core as pm
-from Qt import QtCore
+from Qt import QtCore, QtWidgets
 
 from redshift_playblast.model import playblast_job
 
@@ -28,10 +28,17 @@ class Maya_Manager(object):
                                               avaible_cameras=self.get_avaible_cameras())
 
     def get_frame_path(self):
-        return "{project_location}/movies/{scene_name}.####.png".format(project_location=pm.workspace.path, scene_name=os.path.splitext(os.path.basename(pm.sceneName()))[0])
+        return "{project_location}/movies/{scene_name}.####.png".format(project_location=pm.workspace.path, scene_name=self.get_scene_name())
 
     def get_movie_path(self):
-        return "{project_location}/movies/{scene_name}.mov".format(project_location=pm.workspace.path, scene_name=os.path.splitext(os.path.basename(pm.sceneName()))[0])
+        return "{project_location}/movies/{scene_name}.mov".format(project_location=pm.workspace.path, scene_name=self.get_scene_name())
+
+    def get_scene_name(self):
+        scene_name=os.path.splitext(os.path.basename(pm.sceneName()))[0]
+        if len(scene_name)==0:
+            return "untitled"
+        else:
+            return scene_name
 
     def get_camera_information(self):
 
@@ -46,9 +53,14 @@ class Maya_Manager(object):
         return [x.parent(0) for x in pm.ls(type='camera')]
 
     def createPlayblast(self):
+        #check if movie file already exists
+        if not os.path.exists(self.job.movie_path):
+            result=QtWidgets.QMessageBox.question(None, "Movie file already exists", "Movie File already exists. Override?")
+            if result==QtWidgets.QMessageBox.StandardButton.No:
+                return
         if self.job.local_mode:
             worker=Redshift_Worker(self.job)
-            worker.render_frames()
+            worker.create_playblast()
         else:
             self.job.submit_to_deadline()
 

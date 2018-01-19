@@ -127,7 +127,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
                                       )
 
         redshift = redshift_worker.Redshift_Worker(my_mock)
-        quicktime_path=redshift.render_frames()
+        quicktime_path=redshift.create_playblast()
 
         self.assertTrue(os.path.exists(quicktime_path))
 

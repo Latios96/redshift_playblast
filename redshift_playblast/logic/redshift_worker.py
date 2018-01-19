@@ -138,7 +138,7 @@ class Redshift_Worker(object):
         self._get_object_by_name("redshiftOptions").unifiedAdaptiveErrorThreshold.set(QUALITY_PRESETS[quality.lower()]['threshold'])
 
 
-    def render_frames(self):
+    def create_playblast(self):
         """
         Renders all frames and creates Quicktime after that. Will remove rendered images
         :return: path to created Quicktime
@@ -146,6 +146,9 @@ class Redshift_Worker(object):
         logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame)+1)
 
         with get_edit_context() as context:
+            #disable parallel evaluation
+            context.disable_parallel_evaluation()
+
             #create shader overrides
             self.create_shader_override(context, self.args.shader_override_type)
 
@@ -175,6 +178,9 @@ class Redshift_Worker(object):
         start_frame=str(self.start_frame)
         input_path=self.frame_path.replace('####', '%04d')
         output_file= self.frame_path.replace('.####', '').replace(FRAME_EXTENSION, MOVIE_EXTENSION)
+
+        if os.path.exists(output_file):
+            os.remove(output_file)
 
         convert_command = '{0}/ffmpeg.exe -apply_trc iec61966_2_1 -r 24 -start_number {1} -i "{2}" -vcodec libx264 -pix_fmt yuv420p -profile:v high -level 4.0 -preset medium -bf 0 "{3}"'.format(hooks.get_ffmpeg_folder(), start_frame, input_path, output_file)
 

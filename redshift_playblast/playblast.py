@@ -54,7 +54,7 @@ def main():
 
     renderer = redshift_worker.Redshift_Worker(job)
 
-    renderer.render_frames()
+    renderer.create_playblast()
 
 if __name__ == '__main__':
     main()

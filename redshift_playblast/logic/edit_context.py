@@ -14,6 +14,7 @@ class Edit_Context(object):
         self._attr_values={}
         self._connected_attrs={}# stores old connection before disconnect
         self._old_attr_values={}#stores old values before applying new attribute connections
+        self._eval_mode=None #stores old evaluation mode
         logger.debug("created edit context..")
 
     def __enter__(self):
@@ -22,10 +23,6 @@ class Edit_Context(object):
 
     def __exit__(self, *args):
         logger.debug("exit edit context..")
-
-        #delete creates nodes
-        logger.debug("deleting created nodes... %s", self._created_nodes)
-        pm.delete(self._created_nodes)
 
         #restore attribute values
         logger.debug("restoring attribute values..")
@@ -49,7 +46,12 @@ class Edit_Context(object):
             logger.debug("restore attribute %s to value %s", attribute, inputs)
             inputs[0].connect(attribute)
 
+        # delete creates nodes
+        logger.debug("deleting created nodes... %s", self._created_nodes)
+        pm.delete(self._created_nodes)
 
+        if self._eval_mode:
+            pm.evaluationManager(mode=self._eval_mode[0])
 
 
     def createNode(self, type):
@@ -81,5 +83,10 @@ class Edit_Context(object):
         self._connected_attrs[attribute]=attribute.inputs(p=True)
         logger.debug('disconnecting attribute %s', attribute)
         attribute.disconnect()
+
+    def disable_parallel_evaluation(self):
+        self._eval_mode = pm.evaluationManager(mode=True, query=True)
+        pm.evaluationManager(mode="off")
+
 
 
