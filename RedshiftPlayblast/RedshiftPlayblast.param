@@ -3,7 +3,7 @@ Type=label
 Label=About
 Category=About Plugin
 CategoryOrder=-1
-Default=An example of a custom Plugin
+Default=Playblasting using Redshift
 Description=Not configurable
 
 [ConcurrentTasks]
@@ -11,11 +11,11 @@ Type=label
 Label=ConcurrentTasks
 Category=About Plugin
 CategoryOrder=-1
-Default=True
+Default=False
 Description=Not configurable
 
-[MyPluginRenderExecutable]
+[MayaPyExecutable]
 Type=filename
-Label=My Plugin Render Executable
-Default=c:\path\to\my\executable.exe
+Label=MayaPy Executable
+Default=C:\Program Files\Autodesk\Maya2017\bin\mayapy.exe
 Description=The path to the executable file used for rendering.

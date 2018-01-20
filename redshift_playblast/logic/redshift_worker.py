@@ -37,8 +37,8 @@ QUALITY_PRESETS={
             },
     'high': {
             'min_samples': 2,
-            'max_samples': 64,
-            'threshold': 0.01
+            'max_samples': 128,
+            'threshold': 0.005
             },
 }
 
@@ -123,9 +123,9 @@ class Redshift_Worker(object):
         Renders all frames and creates Quicktime after that. Will remove rendered images
         :return: path to created Quicktime
         """
-        exception=None
-        with get_edit_context() as context:
-            try:
+        try:
+            with get_edit_context() as context:
+
                 #disable parallel evaluation
                 context.disable_parallel_evaluation()
 
@@ -161,11 +161,9 @@ class Redshift_Worker(object):
                 context.setAttr(self._get_object_by_name("defaultRenderGlobals").endFrame, self.end_frame)
                 mel.eval('mayaBatchRenderProcedure(0, "", "' + str('') + '", "' + 'redshift' + '", "")')
 
-            except Exception as e:
-                exception=e
+        except Exception as e:
+            logger.error(e)
 
-        if exception:
-            raise exception
 
         #path to created quicktime
         quicktime=self._create_quicktime()

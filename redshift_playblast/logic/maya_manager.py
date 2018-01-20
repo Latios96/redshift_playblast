@@ -58,9 +58,9 @@ class Maya_Manager(object):
         return [x.parent(0) for x in pm.ls(type='camera')]
 
     def createPlayblast(self):
-        if not os.path.exists(self.job.movie_path):
+        if os.path.exists(self.job.movie_path):
             result=popups_questions.movie_exists()
-            if result:
+            if not result:
                 return
         if self.job.local_mode:
             worker=Redshift_Worker(self.job)
