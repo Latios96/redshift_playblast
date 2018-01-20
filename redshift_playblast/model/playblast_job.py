@@ -13,7 +13,7 @@ class Playblast_Job(QtCore.QObject):
 
     data_changed=QtCore.Signal()
 
-    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, avaible_cameras=[], shader_override_type=0, local_mode=False):
+    def __init__(self, file_path=None,start_frame=None,end_frame=None,width=None,height=None,frame_path=None, movie_path=None,camera=None,dof=None,motion_blur=None,quality=None, avaible_cameras=[], shader_override_type=0, local_mode=True):
         """
         :param file_path: path to the Maya file to open
         :type file_path: str

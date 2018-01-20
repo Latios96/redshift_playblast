@@ -123,43 +123,49 @@ class Redshift_Worker(object):
         Renders all frames and creates Quicktime after that. Will remove rendered images
         :return: path to created Quicktime
         """
-
+        exception=None
         with get_edit_context() as context:
-            #disable parallel evaluation
-            context.disable_parallel_evaluation()
+            try:
+                #disable parallel evaluation
+                context.disable_parallel_evaluation()
 
-            # change renderer
-            context.setAttr(self._get_object_by_name("defaultRenderGlobals").currentRenderer, 'redshift')
+                # change renderer
+                context.setAttr(self._get_object_by_name("defaultRenderGlobals").currentRenderer, 'redshift')
 
-            # set file format and other render setting stuff
-            context.setAttr(self._get_object_by_name("redshiftOptions").imageFormat,2)
+                # set file format and other render setting stuff
+                context.setAttr(self._get_object_by_name("redshiftOptions").imageFormat,2)
 
-            context.setAttr(self._get_object_by_name("defaultRenderGlobals").animation, 1)
-            context.setAttr(self._get_object_by_name("defaultRenderGlobals").extensionPadding,4)
+                context.setAttr(self._get_object_by_name("defaultRenderGlobals").animation, 1)
+                context.setAttr(self._get_object_by_name("defaultRenderGlobals").extensionPadding,4)
 
-            self.set_start_end_frame(context, self.args.start_frame, self.args.end_frame)
+                self.set_start_end_frame(context, self.args.start_frame, self.args.end_frame)
 
-            self.set_resolution(context, self.args.width, self.args.height)
+                self.set_resolution(context, self.args.width, self.args.height)
 
-            self.set_frame_path(context, self.args.frame_path)
+                self.set_frame_path(context, self.args.frame_path)
 
-            self.set_camera(context, self.args.camera)
+                self.set_camera(context, self.args.camera)
 
-            self.set_dof(context, self.args.dof)
+                self.set_dof(context, self.args.dof)
 
-            self.set_motion_blur(context, self.args.motion_blur)
+                self.set_motion_blur(context, self.args.motion_blur)
 
-            self.set_quality(context, self.args.quality)
+                self.set_quality(context, self.args.quality)
 
+                #create shader overrides
+                self.create_shader_override(context, self.args.shader_override_type)
 
-            #create shader overrides
-            self.create_shader_override(context, self.args.shader_override_type)
+                logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame) + 1)
 
-            logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame) + 1)
+                context.setAttr(self._get_object_by_name("defaultRenderGlobals").startFrame, self.start_frame)
+                context.setAttr(self._get_object_by_name("defaultRenderGlobals").endFrame, self.end_frame)
+                mel.eval('mayaBatchRenderProcedure(0, "", "' + str('') + '", "' + 'redshift' + '", "")')
 
-            context.setAttr(self._get_object_by_name("defaultRenderGlobals").startFrame, self.start_frame)
-            context.setAttr(self._get_object_by_name("defaultRenderGlobals").endFrame, self.end_frame)
-            mel.eval('mayaBatchRenderProcedure(0, "", "' + str('') + '", "' + 'redshift' + '", "")')
+            except Exception as e:
+                exception=e
+
+        if exception:
+            raise exception
 
         #path to created quicktime
         quicktime=self._create_quicktime()

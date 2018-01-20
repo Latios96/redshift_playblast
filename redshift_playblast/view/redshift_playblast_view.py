@@ -190,7 +190,7 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
 
         #shader override
         old_shader_override=job.shader_override_type
-        print old_shader_override
+
         self._ui.cmbxShaderOverride.clear()
 
         for number, nice_name in Shader_Override_Type.nice_names.iteritems():

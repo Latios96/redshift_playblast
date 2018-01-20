@@ -6,10 +6,11 @@ from redshift_playblast.logic.redshift_worker import Redshift_Worker
 logger = logging.getLogger(__name__)
 
 import pymel.core as pm
+import maya.cmds as cmds
 from Qt import QtCore, QtWidgets
 
 from redshift_playblast.model import playblast_job
-
+from redshift_playblast.view import popups_questions
 
 class Maya_Manager(object):
 
@@ -41,6 +42,10 @@ class Maya_Manager(object):
             return scene_name
 
     def get_camera_information(self):
+        """
+        Returns information about current camera
+        :return: tupel of current camera (pymel node) and depthOfField enabled (bool)
+        """
 
         if len(pm.ls('render_cam'))>0:
             camera=pm.ls('render_cam')[0]
@@ -53,15 +58,19 @@ class Maya_Manager(object):
         return [x.parent(0) for x in pm.ls(type='camera')]
 
     def createPlayblast(self):
-        #check if movie file already exists
         if not os.path.exists(self.job.movie_path):
-            result=QtWidgets.QMessageBox.question(None, "Movie file already exists", "Movie File already exists. Override?")
-            if result==QtWidgets.QMessageBox.StandardButton.No:
+            result=popups_questions.movie_exists()
+            if result:
                 return
         if self.job.local_mode:
             worker=Redshift_Worker(self.job)
             worker.create_playblast()
         else:
+            #check for unsaved changes
+            if cmds.file(q=True, modified=True):
+                result = popups_questions.unsaved_changes()
+                if result:
+                    pm.saveFile()
             self.job.submit_to_deadline()
 
     def apply_scene_range(self):
@@ -114,8 +123,8 @@ class Maya_Manager(object):
                 self.job.data_changed.emit()
 
         elif value_name=='camera':
-            print value
-            self.job.camera=pm.ls(value)[0]
+            if len(pm.ls(value))>0:
+                self.job.camera=pm.ls(value)[0]
             #self.job.data_changed.emit()
 
         elif value_name=='dof':
@@ -127,7 +136,6 @@ class Maya_Manager(object):
             self.job.data_changed.emit()
 
         elif value_name=='quality':
-            print value
             self.job.quality=value
             #self.job.data_changed.emit()
 

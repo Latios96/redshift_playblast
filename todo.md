@@ -1,9 +1,10 @@
 # TODO
 - - do local playblast in current maya scene
     ###todo
-    - ask for save???
-    - open output folder  
     ###done
+    - logging level: info
+    - ask for save???
+    - ffmpeg override file  
     - restore render cam
     - untitled file scene name
     - edit context for everything in redshift worker. also motion blur and depth of field
@@ -18,21 +19,27 @@
     - tooltips for maya buttons
     - UI: Buttons for 'from scene range' for frame range and 'from render settings' for resolution
 
-- ffmpeg override file    
-- support unsaved file
-- support current render layer
+- refractor module structure
+- fix deadline progress
+- proper Deadline Plugin: tests, maya path, playblast.py script
+- documentation
 - Readme
-- hooks oder OOP?
+  
+- support current render layer
+- hooks oder OOP mit Dependecy Injection????
+- customize: 
+    - image/movie location
+    
+   
 - hook for image location
 - exception when ffmpeg ist not found
 - playblast_job: illegal_argument exceptions
 
-- fix deadline progress
-- proper Deadline Plugin: tests, maya path, playblast.py script
-- documentation
 
+- rewrite ui
 - QC Renders for Alembics and VDBs
 - demo video
+
 ## install script
 cmd line script:
 - fragt nach Ordner im Maya [Script_Path oder PythonPath] und kopiert playblast module dahin 
