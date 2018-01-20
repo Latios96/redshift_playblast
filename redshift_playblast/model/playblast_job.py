@@ -68,6 +68,7 @@ class Playblast_Job(QtCore.QObject):
         string+="{0}={1}\n".format('end_frame', self.end_frame)
         string+="{0}={1}\n".format('width', self.width)
         string+="{0}={1}\n".format('height', self.height)
+        string += "{0}={1}\n".format('frame_path', self.frame_path)
         string+="{0}={1}\n".format('movie_path', self.movie_path)
         string+="{0}={1}\n".format('camera', self.camera.name())
         string+="{0}={1}\n".format('dof', self.dof)

@@ -3,8 +3,7 @@
     ###todo
     - ask for save???
     - edit context for everything in redshift worker. also motion blur and depth of field
-    - progress bar
-    - rewrite ui using Qt Models
+    - open output folder
     - redshift worker should use movie path of job
     - untitled file sc
     ###done
