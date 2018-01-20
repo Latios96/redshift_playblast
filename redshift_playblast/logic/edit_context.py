@@ -66,7 +66,8 @@ class Edit_Context(object):
     def setAttr(self, attribute, value):
         old_value=attribute.get()
         if attribute not in self._attr_values.keys():
-            self._attr_values[attribute] = old_value
+            if old_value!=None:
+                self._attr_values[attribute] = old_value
         attribute.set(value)
         logger.debug("set attribute %s with old value %s to new value %s", attribute, old_value, value)
 

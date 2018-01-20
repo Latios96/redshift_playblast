@@ -62,27 +62,6 @@ class Redshift_Worker(object):
         if len(pm.ls('redshiftOptions'))==0:
             pm.createNode('RedshiftOptions')
 
-        #change renderer
-        self._get_object_by_name("defaultRenderGlobals").currentRenderer.set('redshift')
-        #set file format and other render setting stuff
-        self._get_object_by_name("redshiftOptions").imageFormat.set(2)
-
-        self._get_object_by_name("defaultRenderGlobals").animation.set(1)
-        self._get_object_by_name("defaultRenderGlobals").extensionPadding.set(4)
-
-        self.set_start_end_frame(self.args.start_frame, self.args.end_frame)
-
-        self.set_resolution(self.args.width, self.args.height)
-
-        self.set_frame_path(self.args.frame_path)
-
-        self.set_camera(self.args.camera)
-
-        self.set_dof(self.args.dof)
-
-        self.set_motion_blur(self.args.motion_blur)
-
-        self.set_quality(self.args.quality)
 
     def _get_object_by_name(self, name):
         """
@@ -98,44 +77,45 @@ class Redshift_Worker(object):
             logger.error(error)
             raise ObjectNotExistsError(error)
 
-    def set_start_end_frame(self, start_frame, end_frame):
+    def set_start_end_frame(self, context, start_frame, end_frame):
         self.start_frame=start_frame
         self.end_frame = end_frame
+
         logger.info("settings start and end frame to %s, %s", start_frame, end_frame)
-        self._get_object_by_name("defaultRenderGlobals").startFrame.set(start_frame)
-        self._get_object_by_name("defaultRenderGlobals").endFrame.set(end_frame)
 
-    def set_resolution(self, width, height):
+    def set_resolution(self, context, width, height):
         logger.info("set resolution to %s x %s", width, height)
-        default_resolution=self._get_object_by_name('defaultResolution')
-        default_resolution.width.set(width)
-        default_resolution.height.set(height)
 
-    def set_frame_path(self, frame_path):
+        default_resolution=self._get_object_by_name('defaultResolution')
+        context.setAttr(default_resolution.width, width)
+        context.setAttr(default_resolution.height, height)
+
+    def set_frame_path(self, context, frame_path):
         self.frame_path=frame_path
         logger.info("set frame path to %s", frame_path)
         logger.info("replaced path to %s", frame_path.replace("_####.png", ""))
-        self._get_object_by_name('defaultRenderGlobals').imageFilePrefix.set(frame_path.replace(".####.png", ""))
+        #context.setAttr(self._get_object_by_name('defaultRenderGlobals').imageFilePrefix, frame_path.replace(".####.png", ""))
+        context.setAttr(self._get_object_by_name('defaultRenderGlobals').imageFilePrefix, frame_path.replace(".####.png", ""))
 
-    def set_camera(self, camera):
+    def set_camera(self, context, camera):
         logger.info("set camera to %s", camera)
         self.camera=self._get_object_by_name(camera)
         mel.eval('makeCameraRenderable("{0}")'.format(camera))
 
-    def set_dof(self, dof_enabled):
+    def set_dof(self, context, dof_enabled):
         logger.info("set dof enabled: %s", dof_enabled)
-        self.camera.depthOfField.set(1 if dof_enabled else 0)
+        context.setAttr(self.camera.depthOfField, 1 if dof_enabled else 0)
 
-    def set_motion_blur(self, motion_blur):
+    def set_motion_blur(self, context, motion_blur):
         logger.info("set motion_blur enabled: %s", motion_blur)
-        self._get_object_by_name("redshiftOptions").motionBlurEnable.set(motion_blur)
-        self._get_object_by_name("redshiftOptions").motionBlurDeformationEnable.set(motion_blur)
+        context.setAttr(self._get_object_by_name("redshiftOptions").motionBlurEnable, motion_blur)
+        context.setAttr(self._get_object_by_name("redshiftOptions").motionBlurDeformationEnable, motion_blur)
 
-    def set_quality(self, quality):
+    def set_quality(self, context, quality):
         logger.info("set quality to: %s", quality)
-        self._get_object_by_name("redshiftOptions").unifiedMinSamples.set(QUALITY_PRESETS[quality.lower()]['min_samples'])
-        self._get_object_by_name("redshiftOptions").unifiedMaxSamples.set(QUALITY_PRESETS[quality.lower()]['max_samples'])
-        self._get_object_by_name("redshiftOptions").unifiedAdaptiveErrorThreshold.set(QUALITY_PRESETS[quality.lower()]['threshold'])
+        context.setAttr(self._get_object_by_name("redshiftOptions").unifiedMinSamples, QUALITY_PRESETS[quality.lower()]['min_samples'])
+        context.setAttr(self._get_object_by_name("redshiftOptions").unifiedMaxSamples, QUALITY_PRESETS[quality.lower()]['max_samples'])
+        context.setAttr(self._get_object_by_name("redshiftOptions").unifiedAdaptiveErrorThreshold, QUALITY_PRESETS[quality.lower()]['threshold'])
 
 
     def create_playblast(self):
@@ -143,22 +123,43 @@ class Redshift_Worker(object):
         Renders all frames and creates Quicktime after that. Will remove rendered images
         :return: path to created Quicktime
         """
-        logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame)+1)
 
         with get_edit_context() as context:
             #disable parallel evaluation
             context.disable_parallel_evaluation()
 
+            # change renderer
+            context.setAttr(self._get_object_by_name("defaultRenderGlobals").currentRenderer, 'redshift')
+
+            # set file format and other render setting stuff
+            context.setAttr(self._get_object_by_name("redshiftOptions").imageFormat,2)
+
+            context.setAttr(self._get_object_by_name("defaultRenderGlobals").animation, 1)
+            context.setAttr(self._get_object_by_name("defaultRenderGlobals").extensionPadding,4)
+
+            self.set_start_end_frame(context, self.args.start_frame, self.args.end_frame)
+
+            self.set_resolution(context, self.args.width, self.args.height)
+
+            self.set_frame_path(context, self.args.frame_path)
+
+            self.set_camera(context, self.args.camera)
+
+            self.set_dof(context, self.args.dof)
+
+            self.set_motion_blur(context, self.args.motion_blur)
+
+            self.set_quality(context, self.args.quality)
+
+
             #create shader overrides
             self.create_shader_override(context, self.args.shader_override_type)
 
-            old_start = self._get_object_by_name("defaultRenderGlobals").startFrame.get()
-            old_end = self._get_object_by_name("defaultRenderGlobals").endFrame.get()
-            self._get_object_by_name("defaultRenderGlobals").startFrame.set(self.start_frame)
-            self._get_object_by_name("defaultRenderGlobals").endFrame.set(self.end_frame)
+            logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame) + 1)
+
+            context.setAttr(self._get_object_by_name("defaultRenderGlobals").startFrame, self.start_frame)
+            context.setAttr(self._get_object_by_name("defaultRenderGlobals").endFrame, self.end_frame)
             mel.eval('mayaBatchRenderProcedure(0, "", "' + str('') + '", "' + 'redshift' + '", "")')
-            self._get_object_by_name("defaultRenderGlobals").startFrame.set(old_start)
-            self._get_object_by_name("defaultRenderGlobals").endFrame.set(old_end)
 
         #path to created quicktime
         quicktime=self._create_quicktime()
