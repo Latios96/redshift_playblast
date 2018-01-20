@@ -100,5 +100,14 @@ class Redshift_Playblast_Test(unittest.TestCase):
         with self.assertRaises(Exception):
             manager.set_job_value('asdfas', 1440)
 
+    def test_get_scene_name(self):
+        """Check that a untitled file is also named untitled"""
+        import pymel.core as pm
+        pm.newFile(force=True)
+
+        manager = maya_manager.Maya_Manager()
+        self.assertTrue('untitled' in manager.get_scene_name())
+
+
 
 

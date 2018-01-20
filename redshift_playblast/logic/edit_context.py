@@ -1,6 +1,7 @@
 import logging
 
 import pymel.core as pm
+import maya.mel as mel
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,7 @@ class Edit_Context(object):
         self._connected_attrs={}# stores old connection before disconnect
         self._old_attr_values={}#stores old values before applying new attribute connections
         self._eval_mode=None #stores old evaluation mode
+        self._old_render_cam=None#stores old render cam
         logger.debug("created edit context..")
 
     def __enter__(self):
@@ -53,6 +55,7 @@ class Edit_Context(object):
         if self._eval_mode:
             pm.evaluationManager(mode=self._eval_mode[0])
 
+        mel.eval('makeCameraRenderable("{0}")'.format(self._old_render_cam))
 
     def createNode(self, type):
         """
@@ -89,5 +92,13 @@ class Edit_Context(object):
         self._eval_mode = pm.evaluationManager(mode=True, query=True)
         pm.evaluationManager(mode="off")
 
+    def set_render_cam(self, camera):
+        cams = [x.parent(0) for x in pm.ls(type='camera')]
+
+        for cam in cams:
+            if cam.renderable.get():
+                self._old_render_cam=cam
+                break
+        mel.eval('makeCameraRenderable("{0}")'.format(camera))
 
 

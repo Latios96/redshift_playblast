@@ -100,7 +100,7 @@ class Redshift_Worker(object):
     def set_camera(self, context, camera):
         logger.info("set camera to %s", camera)
         self.camera=self._get_object_by_name(camera)
-        mel.eval('makeCameraRenderable("{0}")'.format(camera))
+        context.set_render_cam(camera)
 
     def set_dof(self, context, dof_enabled):
         logger.info("set dof enabled: %s", dof_enabled)
@@ -178,7 +178,7 @@ class Redshift_Worker(object):
         """
         start_frame=str(self.start_frame)
         input_path=self.frame_path.replace('####', '%04d')
-        output_file= self.frame_path.replace('.####', '').replace(FRAME_EXTENSION, MOVIE_EXTENSION)
+        output_file=self.args.movie_path
 
         if os.path.exists(output_file):
             os.remove(output_file)

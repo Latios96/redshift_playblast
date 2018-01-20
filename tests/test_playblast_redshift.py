@@ -112,7 +112,8 @@ class Redshift_Playblast_Test(unittest.TestCase):
 
         #now check correctness of values
 
-    def test_render_frames_no_redshift_config(self):
+    @patch('webbrowser.open')
+    def test_render_frames_no_redshift_config(self, webrowser_open_mock):
         """
         Tests rendering a file which didnt hat redshift loaded before
         :return:
@@ -123,6 +124,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
                                       start_frame=1,
                                       end_frame=3,
                                       frame_path=frames,
+                                      movie_path=frames.replace("####.png", "mov"),
                                       camera='render_cam',
                                       )
 
@@ -130,6 +132,8 @@ class Redshift_Playblast_Test(unittest.TestCase):
         quicktime_path=redshift.create_playblast()
 
         self.assertTrue(os.path.exists(quicktime_path))
+
+        self.assertTrue(webrowser_open_mock.called)
 
         os.remove(quicktime_path)
 

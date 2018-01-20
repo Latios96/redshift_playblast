@@ -2,10 +2,10 @@
 - - do local playblast in current maya scene
     ###todo
     - ask for save???
-    - open output folder
-    - redshift worker should use movie path of job
-    - untitled file sc
+    - open output folder  
     ###done
+    - restore render cam
+    - untitled file scene name
     - edit context for everything in redshift worker. also motion blur and depth of field
     - rename worker.render_frames() to create_playblast
     - add check for DG Evaluation Mode

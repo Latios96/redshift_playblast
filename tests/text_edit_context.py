@@ -1,6 +1,6 @@
 import unittest
 import pymel.core as pm
-
+import maya.mel as mel
 import os
 
 from redshift_playblast.logic.edit_context import get_edit_context
@@ -8,6 +8,13 @@ from redshift_playblast.logic.edit_context import get_edit_context
 
 def get_resource(name):
     return os.path.join(os.path.dirname(__file__), 'resources', name)
+
+def get_render_cam():
+    cams = [x.parent(0) for x in pm.ls(type='camera')]
+
+    for cam in cams:
+        if cam.renderable.get():
+            return cam
 
 class MyTestCase(unittest.TestCase):
 
@@ -23,6 +30,12 @@ class MyTestCase(unittest.TestCase):
 
         old_initial_shading_group=pm.ls('initialShadingGroup')[0]
         old_initial_shading_group_inputs=old_initial_shading_group.surfaceShader.inputs()
+
+        old_cam=get_render_cam()
+
+
+
+
         with get_edit_context() as context:
             self.assertNotEqual(context, None)
 
@@ -48,6 +61,10 @@ class MyTestCase(unittest.TestCase):
             context.connectAttr(cube.translate, cube2.translate)
             self.assertEqual(len(cube2.translate.inputs()), 1)
 
+            #test change cam
+            mel.eval('makeCameraRenderable("{0}")'.format(pm.createNode('camera')))
+            self.assertNotEqual(old_cam, get_render_cam())
+
         #verify created surface shader was deleted
         self.assertEqual(len(pm.ls(type='surfaceShader')), 1)
 
@@ -60,6 +77,9 @@ class MyTestCase(unittest.TestCase):
         #verify attributes connected in context are restores
         cube2 = pm.ls('pCube2')[0]
         self.assertEqual(len(cube2.translate.inputs()), 0)
+
+        #verify cam is back
+        self.assertEqual(old_cam, get_render_cam())
 
 if __name__ == '__main__':
     unittest.main()
