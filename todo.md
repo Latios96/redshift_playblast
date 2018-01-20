@@ -1,12 +1,13 @@
 # TODO
 
 ###todo
-- refractor module structure
 - documentation
 - demo video
 - Readme
 - License
-###done- deadline plugin: parameter for maya location
+###done
+- deadline plugin: parameter for maya location
+- refractor module structure
 - do local playblast in current maya scene
 - check movie exists
 - logging level: info
