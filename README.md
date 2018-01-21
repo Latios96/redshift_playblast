@@ -9,12 +9,19 @@ Tools to easily create Playblasts from Maya, but instead of OpenGL render them w
 
 # Requirements
 - ffmpeg is required to stitch the single rendered frames together
+- mock is required to run the tests, Qt.py for GUI/Signals
 
 # Installation
-Use install script. This will guide you through the installation
+### Maya
+- install Python Dependencies:
 ```sh
-pip install git+ssh://git@github.com/Latios96/ktrack_metadata.git
+pip install -r requirements.txt --target <some folder in PYTHONPATH for Maya>
 ```
+- install ffmpeg, download here: https://www.ffmpeg.org/download.html
+- copy the folder "redshift_playblast" to some folder in PYTHONPATH for Maya
+
+### Deadline
+- the folder "RedshiftPlayblast" is the Deadline Plugin. Inside your Deadline Repository, copy the folder to <DEADLINE_REPOSITOY>/custom/plugins
 
 # Usage
 Run inside Maya 
