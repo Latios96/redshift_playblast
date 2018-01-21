@@ -84,7 +84,7 @@ class RedshiftPlayblastPlugin (DeadlinePlugin):
         renderArguments+=' -frame_path "{0}"'.format(os.path.join(job.GetJobInfoKeyValue('OutputDirectory0'), job.GetJobInfoKeyValue('OutputFilename0')))
 
         print "movie path"
-        renderArguments+=' -movie_path {0}'.format(self.GetPluginInfoEntry('movie_path')) 
+        renderArguments+=' -movie_path "{0}"'.format(self.GetPluginInfoEntry('movie_path')) 
 
         print "getting camera"
         renderArguments+=' -camera {0}'.format(self.GetPluginInfoEntry('camera')) 
