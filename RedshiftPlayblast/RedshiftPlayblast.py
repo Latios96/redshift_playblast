@@ -35,15 +35,22 @@ class RedshiftPlayblastPlugin (DeadlinePlugin):
         self.frames_done=0
 
     ## Clean up the plugin.
-    def Cleanup():
+    def Cleanup(self):
         del self.InitializeProcessCallback
+        for handler in self.StdoutHandlers:
+            del handler
+        del self.RenderArgument
 
     ## Called by Deadline to initialize the plugin.
     def InitializeProcess( self ):
         # Set the plugin specific settings.
         self.SingleFramesOnly = False
         self.PluginType = PluginType.Simple
-        self.AddStdoutHandlerCallback( ".*Frame done - total time for frame.*" ).HandleCallback += self.do_progress
+
+        # Enable stdout handling
+        self.StdoutHandling = True
+
+        self.AddStdoutHandlerCallback( r".*Frame done - total time for frame.*" ).HandleCallback += self.do_progress
 
     #get render executable
     def RenderExecutable(self):
@@ -55,7 +62,7 @@ class RedshiftPlayblastPlugin (DeadlinePlugin):
         return maya_exe
 
     def do_progress (self):
-        self.total_frames=self.GetPluginInfoEntry('end_frame')-self.GetPluginInfoEntry('start_frame')
+        self.total_frames=int(self.GetPluginInfoEntry('end_frame'))-int(self.GetPluginInfoEntry('start_frame'))
         self.frames_done+=1
         print "PROGRESS", self.frames_done*100/(self.total_frames+1)
         self.SetProgress(self.frames_done*100/(self.total_frames+1))

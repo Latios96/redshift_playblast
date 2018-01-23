@@ -2,10 +2,12 @@
 
 ###todo
 - documentation
-- demo video
+- demo video (watermarked)
 - Readme
 - License
 ###done
+- hook for image location/image location
+- fix deadline progress
 - deadline plugin: parameter for maya location
 - refractor module structure
 - do local playblast in current maya scene
@@ -29,16 +31,16 @@
 
 
 ### ideas 
-
-- support current render layer
+- get ffmpeg from enviroment variable
+- support for multiple tasks for Deadline: 
+    - ideas: preference if deadline should have a single task or a task per frame.
+    - this definetly needs unit tests for the deadline plugin
 - hooks oder OOP mit Dependecy Injection????
 - customize: 
-    - image/movie location
     - quality presets
 
-- fix deadline progress
+
 - support for different fps
-- hook for image location
 - exception when ffmpeg ist not found
 - playblast_job: illegal_argument exceptions
 

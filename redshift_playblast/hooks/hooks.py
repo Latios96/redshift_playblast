@@ -1,6 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import pymel.core as pm
 
 def deadline_plugin_info_file(file_handle):
     """
@@ -33,3 +34,17 @@ def assign_production_shader():
     :return:
     """
     logger.info("Assigning production shaders...")
+
+def frame_path(scene_name):
+    """
+    Returns the path of the rendered images. Has to end with .####.png .
+    :return:
+    """
+    return "{project_location}/movies/{scene_name}.####.png".format(project_location=pm.workspace.path, scene_name=scene_name)
+
+def movie_path(scene_name):
+    """
+    Returns the path of the final playblast. Has to end with .mov. {scenename will be replaced automagically}
+    :return:
+    """
+    return "{project_location}/movies/{scene_name}.mov".format(project_location=pm.workspace.path, scene_name=scene_name)

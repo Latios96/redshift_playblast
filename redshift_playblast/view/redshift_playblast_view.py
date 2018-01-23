@@ -141,7 +141,7 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self._ui.radioRunInMaya.toggled.connect(lambda x: self.maya_manager.set_job_value('local_mode', self._ui.radioRunInMaya.isChecked()))
         self._ui.radioRunOnRenderFarm.toggled.connect(lambda x: self.maya_manager.set_job_value('local_mode', self._ui.radioRunInMaya.isChecked()))
 
-        self._ui.btnCreatePlayblast.clicked.connect(self.maya_manager.createPlayblast)
+        self._ui.btnCreatePlayblast.clicked.connect(self.maya_manager.create_playblast)
 
         self._ui.btnSceneRange.clicked.connect(lambda: self.maya_manager.apply_scene_range())
         self._ui.btnRenderSettings.clicked.connect(lambda: self.maya_manager.apply_render_settings_resolution())

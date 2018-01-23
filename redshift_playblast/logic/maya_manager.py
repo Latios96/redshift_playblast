@@ -11,6 +11,7 @@ from Qt import QtCore, QtWidgets
 
 from redshift_playblast.model import playblast_job
 from redshift_playblast.view import popups_questions
+from redshift_playblast.hooks import hooks
 
 class Maya_Manager(object):
 
@@ -29,10 +30,10 @@ class Maya_Manager(object):
                                               avaible_cameras=self.get_avaible_cameras())
 
     def get_frame_path(self):
-        return "{project_location}/movies/{scene_name}.####.png".format(project_location=pm.workspace.path, scene_name=self.get_scene_name())
+        return hooks.frame_path(self.get_scene_name())
 
     def get_movie_path(self):
-        return "{project_location}/movies/{scene_name}.mov".format(project_location=pm.workspace.path, scene_name=self.get_scene_name())
+        return hooks.movie_path(self.get_scene_name())
 
     def get_scene_name(self):
         scene_name=os.path.splitext(os.path.basename(pm.sceneName()))[0]
@@ -57,7 +58,7 @@ class Maya_Manager(object):
     def get_avaible_cameras(self):
         return [x.parent(0) for x in pm.ls(type='camera')]
 
-    def createPlayblast(self):
+    def create_playblast(self):
         if os.path.exists(self.job.movie_path):
             result=popups_questions.movie_exists()
             if not result:

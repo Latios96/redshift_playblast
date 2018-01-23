@@ -155,7 +155,7 @@ class Redshift_Worker(object):
                 #create shader overrides
                 self.create_shader_override(context, self.args.shader_override_type)
 
-                logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame) + 1)
+                logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame))
 
                 context.setAttr(self._get_object_by_name("defaultRenderGlobals").startFrame, self.start_frame)
                 context.setAttr(self._get_object_by_name("defaultRenderGlobals").endFrame, self.end_frame)
