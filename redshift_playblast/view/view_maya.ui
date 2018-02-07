@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>377</width>
-    <height>356</height>
+    <width>372</width>
+    <height>434</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,10 +19,13 @@
      <x>10</x>
      <y>10</y>
      <width>361</width>
-     <height>341</height>
+     <height>421</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetNoConstraint</enum>
+    </property>
     <item>
      <widget class="QGroupBox" name="groupBox_3">
       <property name="title">
@@ -33,13 +36,74 @@
         <rect>
          <x>9</x>
          <y>19</y>
-         <width>184</width>
+         <width>271</width>
          <height>61</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="statusTip">
+           <string>width for playblast</string>
+          </property>
+          <property name="text">
+           <string>width</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="txtWidth">
+          <property name="statusTip">
+           <string>width for playblast</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QLineEdit" name="txtEndFrame">
+          <property name="statusTip">
+           <string>end frame for playblast</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLineEdit" name="txtHeight">
+          <property name="statusTip">
+           <string>height for playblast</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="txtStartFrame">
+          <property name="statusTip">
+           <string>start frame for playblast</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_5">
+          <property name="statusTip">
+           <string>end frame for playblast</string>
+          </property>
+          <property name="text">
+           <string>end</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="label_7">
+          <property name="statusTip">
+           <string>height for playblast</string>
+          </property>
+          <property name="text">
+           <string>height</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QLabel" name="label_4">
+          <property name="statusTip">
+           <string>start frame for playblast</string>
+          </property>
           <property name="layoutDirection">
            <enum>Qt::RightToLeft</enum>
           </property>
@@ -48,36 +112,23 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label_5">
+        <item row="0" column="4">
+         <widget class="QPushButton" name="btnSceneRange">
+          <property name="statusTip">
+           <string>match the playblast range with the scene range</string>
+          </property>
           <property name="text">
-           <string>end</string>
+           <string>scene range</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
-         <widget class="QLineEdit" name="txtEndFrame"/>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="txtStartFrame"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>width</string>
+        <item row="1" column="4">
+         <widget class="QPushButton" name="btnRenderSettings">
+          <property name="statusTip">
+           <string>match playblast resolution with render settings</string>
           </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="txtWidth"/>
-        </item>
-        <item row="1" column="3">
-         <widget class="QLineEdit" name="txtHeight"/>
-        </item>
-        <item row="1" column="2">
-         <widget class="QLabel" name="label_7">
           <property name="text">
-           <string>height</string>
+           <string>render settings</string>
           </property>
          </widget>
         </item>
@@ -106,10 +157,17 @@
            <enum>QLayout::SetDefaultConstraint</enum>
           </property>
           <item row="0" column="1">
-           <widget class="QComboBox" name="cmBxCamera"/>
+           <widget class="QComboBox" name="cmBxCamera">
+            <property name="statusTip">
+             <string>choose camera from scene for playblast</string>
+            </property>
+           </widget>
           </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label">
+            <property name="statusTip">
+             <string>choose camera from scene for playblast</string>
+            </property>
             <property name="layoutDirection">
              <enum>Qt::RightToLeft</enum>
             </property>
@@ -120,6 +178,9 @@
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="chBxDof">
+            <property name="statusTip">
+             <string>enable/disable Depth of field for playblast</string>
+            </property>
             <property name="text">
              <string>Depth of Field</string>
             </property>
@@ -127,6 +188,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QCheckBox" name="chBxMotionBlur">
+            <property name="statusTip">
+             <string>enable/disable motion blur for playblast</string>
+            </property>
             <property name="text">
              <string>Motion Blur</string>
             </property>
@@ -155,6 +219,9 @@
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <widget class="QLabel" name="label_2">
+          <property name="statusTip">
+           <string>choose quality for playblast: low, med or high</string>
+          </property>
           <property name="text">
            <string>Quality</string>
           </property>
@@ -162,6 +229,9 @@
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="label_3">
+          <property name="statusTip">
+           <string>the rendered images will be put in this directory</string>
+          </property>
           <property name="text">
            <string>Output</string>
           </property>
@@ -169,6 +239,9 @@
         </item>
         <item row="0" column="1">
          <widget class="QComboBox" name="cmbxQuality">
+          <property name="statusTip">
+           <string>choose quality for playblast: low, med or high</string>
+          </property>
           <item>
            <property name="text">
             <string>low</string>
@@ -188,6 +261,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QLineEdit" name="txtOutput">
+          <property name="statusTip">
+           <string>the rendered images will be put in this directory</string>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -198,20 +274,129 @@
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="btnSubmit">
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>75</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Shader override</string>
+      </property>
+      <widget class="QWidget" name="gridLayoutWidget_4">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>20</y>
+         <width>341</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QLabel" name="lblShaderOverride">
+          <property name="statusTip">
+           <string>choose if all shaders should be changed for playblast</string>
+          </property>
+          <property name="text">
+           <string>Shader override</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="cmbxShaderOverride">
+          <property name="statusTip">
+           <string>choose if all shaders should be changed for playblast</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>no override</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Ambient Occlusion</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>greyscale</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Production Shader</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item>
+       <widget class="QRadioButton" name="radioRunInMaya">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="statusTip">
+         <string>will do playblast in current maya session</string>
+        </property>
+        <property name="text">
+         <string>run in maya</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioRunOnRenderFarm">
+        <property name="statusTip">
+         <string>will do playblast on renderfarm</string>
+        </property>
+        <property name="text">
+         <string>run on render farm</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QPushButton" name="btnCreatePlayblast">
       <property name="minimumSize">
        <size>
         <width>0</width>
         <height>30</height>
        </size>
       </property>
+      <property name="toolTip">
+       <string/>
+      </property>
+      <property name="statusTip">
+       <string>Will create the playblast using settings above</string>
+      </property>
+      <property name="whatsThis">
+       <string/>
+      </property>
       <property name="text">
-       <string>submit</string>
+       <string>create playblast</string>
       </property>
      </widget>
     </item>
    </layout>
   </widget>
+  <zorder>verticalLayoutWidget</zorder>
+  <zorder>btnCreatePlayblast</zorder>
  </widget>
  <resources/>
  <connections/>

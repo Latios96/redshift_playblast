@@ -9,6 +9,8 @@ import sys
 import os
 import platform
 
+from redshift_playblast.model.shader_override_types import Shader_Override_Type
+
 sys.dont_write_bytecode = True  # Avoid writing .pyc files
 
 # ----------------------------------------------------------------------
@@ -77,7 +79,10 @@ if REPO_PATH not in sys.path:
 
 from Qt import QtWidgets  # pylint: disable=E0611
 from Qt import QtCore  # pylint: disable=E0611
-from Qt import QtUiTools
+try:
+    from Qt import QtUiTools
+except:
+    from PySide2 import QtUiTools
 from redshift_playblast.logic import maya_manager
 
 # Debug
@@ -115,7 +120,7 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self.setCentralWidget(self._ui)
 
         # Define minimum size of UI
-        self.setMinimumSize(380, 356)
+        self.setMinimumSize(380, 457)
 
         self.maya_manager=maya_manager.Maya_Manager()
         # Signals
@@ -126,13 +131,30 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         self._ui.txtHeight.textChanged.connect(lambda x: self.maya_manager.set_job_value('height', x))
 
         self._ui.cmBxCamera.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('camera', self._ui.cmBxCamera.currentText()))
-        self._ui.chBxMotionBlur.stateChanged.connect(lambda x: self.maya_manager.set_job_value('motion_blur', x))
-        self._ui.chBxDof.stateChanged.connect(lambda x: self.maya_manager.set_job_value('dof', x))
+        self._ui.chBxMotionBlur.stateChanged.connect(lambda x: self.maya_manager.set_job_value('motion_blur', x==QtCore.Qt.CheckState.Checked))
+        self._ui.chBxDof.stateChanged.connect(lambda x: self.maya_manager.set_job_value('dof', x==QtCore.Qt.CheckState.Checked))
 
         self._ui.cmbxQuality.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('quality', self._ui.cmbxQuality.currentText()))
 
-        self._ui.btnSubmit.clicked.connect(self.maya_manager.submit)
+        self._ui.cmbxShaderOverride.currentIndexChanged.connect(lambda x: self.maya_manager.set_job_value('shader_override_type', Shader_Override_Type.value(self._ui.cmbxShaderOverride.currentText())))
+
+        self._ui.radioRunInMaya.toggled.connect(lambda x: self.maya_manager.set_job_value('local_mode', self._ui.radioRunInMaya.isChecked()))
+        self._ui.radioRunOnRenderFarm.toggled.connect(lambda x: self.maya_manager.set_job_value('local_mode', self._ui.radioRunInMaya.isChecked()))
+
+        self._ui.btnCreatePlayblast.clicked.connect(self.maya_manager.create_playblast)
+
+        self._ui.btnSceneRange.clicked.connect(lambda: self.maya_manager.apply_scene_range())
+        self._ui.btnRenderSettings.clicked.connect(lambda: self.maya_manager.apply_render_settings_resolution())
         self.update_view()
+
+        #tab order
+        self.setTabOrder(self._ui.txtStartFrame, self._ui.txtEndFrame)
+        self.setTabOrder(self._ui.txtEndFrame, self._ui.txtWidth)
+        self.setTabOrder(self._ui.txtWidth, self._ui.txtHeight)
+        self.setTabOrder(self._ui.txtHeight, self._ui.txtOutput)
+        self.setTabOrder(self._ui.txtOutput, self._ui.btnCreatePlayblast)
+        self.setTabOrder(self._ui.btnCreatePlayblast, self._ui.txtStartFrame)
+
 
     def loadUiWidget(self, uifilename, parent=None):
         loader = QtUiTools.QUiLoader()
@@ -158,12 +180,28 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         for camera in job.avaible_cameras:
             self._ui.cmBxCamera.addItem(camera.name())
         self._ui.cmBxCamera.setCurrentIndex(self._ui.cmBxCamera.findText(old_cam))
+
         self._ui.chBxMotionBlur.setCheckState(QtCore.Qt.CheckState.Checked if job.motion_blur else QtCore.Qt.CheckState.Unchecked)
         self._ui.chBxDof.setCheckState(QtCore.Qt.CheckState.Checked if job.dof else QtCore.Qt.CheckState.Unchecked)
 
         #output
         self._ui.cmbxQuality.setCurrentIndex(self._ui.cmbxQuality.findText(job.quality))
         self._ui.txtOutput.setText(job.frame_path)
+
+        #shader override
+        old_shader_override=job.shader_override_type
+
+        self._ui.cmbxShaderOverride.clear()
+
+        for number, nice_name in Shader_Override_Type.nice_names.iteritems():
+            self._ui.cmbxShaderOverride.addItem(nice_name)
+        self._ui.cmbxShaderOverride.setCurrentIndex(self._ui.cmbxShaderOverride.findText(Shader_Override_Type.nice_name(old_shader_override)))
+
+        self._ui.cmBxCamera.setCurrentIndex(self._ui.cmBxCamera.findText(old_cam))
+
+        self._ui.radioRunInMaya.setChecked(job.local_mode)
+        self._ui.radioRunOnRenderFarm.setChecked(False if job.local_mode else True)
+
 
 # ----------------------------------------------------------------------
 # DCC application helper functions

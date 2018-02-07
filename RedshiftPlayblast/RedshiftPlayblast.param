@@ -1,0 +1,21 @@
+[About]
+Type=label
+Label=About
+Category=About Plugin
+CategoryOrder=-1
+Default=Playblasting using Redshift
+Description=Not configurable
+
+[ConcurrentTasks]
+Type=label
+Label=ConcurrentTasks
+Category=About Plugin
+CategoryOrder=-1
+Default=False
+Description=Not configurable
+
+[MayaPyExecutable]
+Type=filename
+Label=MayaPy Executable
+Default=C:\Program Files\Autodesk\Maya2017\bin\mayapy.exe
+Description=The path to the executable file used for rendering.

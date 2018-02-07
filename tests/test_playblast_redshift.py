@@ -1,18 +1,17 @@
-import glob
-import unittest
-
 import os
+import unittest
 import uuid
 
-from mock import patch, Mock
-import sys
+from mock import patch, Mock, MagicMock
 
 from redshift_playblast import playblast
+from redshift_playblast.logic import redshift_worker
+
 
 def get_resource(name):
     return os.path.join(os.path.dirname(__file__), 'resources', name)
 
-def construct_args_mock(**kwargs):
+def construct_args_mock_cli(**kwargs):
     args_mock=Mock()
     args_mock.start_frame = 1
     args_mock.end_frame = 2
@@ -24,6 +23,26 @@ def construct_args_mock(**kwargs):
     args_mock.dof = 'True'
     args_mock.motion_blur='True'
     args_mock.quality='low'
+    args_mock.shader_override_type = 0
+
+    for key, value in kwargs.iteritems():
+        setattr(args_mock, key, value)
+
+    return args_mock
+
+def construct_job_mock(**kwargs):
+    args_mock=Mock()
+    args_mock.start_frame = 1
+    args_mock.end_frame = 2
+    args_mock.width=1920
+    args_mock.height = 1080
+    args_mock.frame_path=get_resource('playblast_test.####.png')
+    args_mock.file_path=get_resource('test_scene_cube.ma')
+    args_mock.camera='camera1'
+    args_mock.dof = True
+    args_mock.motion_blur=True
+    args_mock.quality='low'
+    args_mock.shader_override_type=0
 
     for key, value in kwargs.iteritems():
         setattr(args_mock, key, value)
@@ -41,14 +60,14 @@ class Redshift_Playblast_Test(unittest.TestCase):
         :return:
         """
         #constructing result fakce
-        my_mock=construct_args_mock(quality='ert')
+        my_mock=construct_args_mock_cli(quality='ert')
         argparse_mock.return_value=my_mock
 
         #now parse the args
         with self.assertRaises(playblast.PlayblastQualityError):
             playblast.main()
 
-    @patch('redshift_playblast.playblast.Redshift')
+    @patch('redshift_playblast.logic.redshift_worker.Redshift_Worker')
     @patch('argparse.ArgumentParser.parse_args')
     def test_spelling_robustness(self, argparse_mock,redshift_mock):
         """
@@ -58,7 +77,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
         """
         for spelling in ['low', 'loW', 'Low','high', 'HigH','med']:
             # constructing result fakce
-            my_mock=construct_args_mock(quality=spelling)
+            my_mock=construct_args_mock_cli(quality=spelling)
             argparse_mock.return_value = my_mock
 
             # now parse the args
@@ -71,15 +90,15 @@ class Redshift_Playblast_Test(unittest.TestCase):
         """
 
         argparse_mock = Mock()
-        my_mock = construct_args_mock()
+        my_mock = construct_job_mock()
 
-        redshift = playblast.Redshift(my_mock)
+        redshift = redshift_worker.Redshift_Worker(my_mock)
 
         # test existing obj
         self.assertFalse(redshift._get_object_by_name('persp')==None)
 
         # test non existing obj
-        with self.assertRaises(playblast.ObjectNotExistsError):
+        with self.assertRaises(redshift_worker.ObjectNotExistsError):
             redshift._get_object_by_name('persptrgft')
 
     def test_redshift_setter_correctness(self):
@@ -88,34 +107,48 @@ class Redshift_Playblast_Test(unittest.TestCase):
         :return:
         """
         argparse_mock=Mock()
-        my_mock = construct_args_mock()
-        print
-        redshift=playblast.Redshift(my_mock)
+        my_mock = construct_job_mock()
+        redshift = redshift_worker.Redshift_Worker(my_mock)
 
         #now check correctness of values
 
-    def test_render_frames_no_redshift_config(self):
+    @patch('webbrowser.open')
+    def test_render_frames_no_redshift_config(self, webrowser_open_mock):
         """
         Tests rendering a file which didnt hat redshift loaded before
         :return:
         """
         argparse_mock = Mock()
-        frames=get_resource('test_render_{0}'.format(str(uuid.uuid4()).split('-')[0]))
-        my_mock = construct_args_mock(file_path=get_resource('test_scene_cube_no_redshift.ma'),
+        frames=get_resource('test_render_{0}.####.png'.format(str(uuid.uuid4()).split('-')[0]))
+        my_mock = construct_job_mock(file_path=get_resource('test_scene_cube_no_redshift.ma'),
                                       start_frame=1,
                                       end_frame=3,
                                       frame_path=frames,
+                                      movie_path=frames.replace("####.png", "mov"),
                                       camera='render_cam',
                                       )
 
-        redshift = playblast.Redshift(my_mock)
-        redshift.render_frame(1)
+        redshift = redshift_worker.Redshift_Worker(my_mock)
+        quicktime_path=redshift.create_playblast()
 
-        files=glob.glob(frames+'*')
-        self.assertTrue(len(files)==3)
+        self.assertTrue(os.path.exists(quicktime_path))
 
-        for f in files:
-            os.remove(f)
+        self.assertTrue(webrowser_open_mock.called)
+
+        os.remove(quicktime_path)
+
+    @patch('redshift_playblast.hooks.hooks.get_ffmpeg_folder')
+    def test_no_ffmpeg_found(self, ffmpeg_folder_mock):
+        my_mock = construct_job_mock(local_mode=True, start_frame=1, end_frame=2, movie_path="test_path")
+
+        ffmpeg_folder_mock.return_value="C:/tests"
+
+        redshift = redshift_worker.Redshift_Worker(my_mock)
+        redshift.set_start_end_frame(None, 1,2)
+        redshift.set_frame_path(MagicMock(), "test_path")
+
+        with self.assertRaises(redshift_worker.FFmpegNotFound):
+            redshift._create_quicktime()
 
 
 
