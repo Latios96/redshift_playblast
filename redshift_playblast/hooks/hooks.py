@@ -29,9 +29,10 @@ def get_ffmpeg_folder():
     """
     return 'C:/ffmpeg/bin'
 
-def assign_production_shader():
+def assign_production_shader(context):
     """
     Called when Shader override type is set to PRODUCTION_SHADER. Place your logic to get production shaders and assignment here
+    You have to use the given edit context, if you want your changes to be reverted in a live maya session
     :return:
     """
     logger.info("Assigning production shaders...")

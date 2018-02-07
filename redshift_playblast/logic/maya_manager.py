@@ -14,6 +14,9 @@ from redshift_playblast.view import popups_questions
 from redshift_playblast.hooks import hooks
 
 class Maya_Manager(object):
+    """
+    Class responsable for doing all the Maya Logic
+    """
 
     def __init__(self):
         self.job= playblast_job.Playblast_Job(file_path=pm.sceneName(),

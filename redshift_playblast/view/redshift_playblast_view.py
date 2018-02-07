@@ -1,39 +1,29 @@
-"""This uses a Qt binding of "any" kind, thanks to the Qt.py module,
-to produce an UI. First, one .ui file is loaded and then attaches
-another .ui file onto the first. Think of it as creating a modular UI.
-More on Qt.py:
-https://github.com/mottosso/Qt.py
 """
+Based on pyvfx-boilerplate https://github.com/fredrikaverpil/pyvfx-boilerplate
+The MIT License (MIT)
 
-import sys
+Copyright (c) 2016 Fredrik Averpil
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 import os
-import platform
-
-from redshift_playblast.model.shader_override_types import Shader_Override_Type
-
-sys.dont_write_bytecode = True  # Avoid writing .pyc files
-
-# ----------------------------------------------------------------------
-# Environment detection
-# ----------------------------------------------------------------------
-
-try:
-    import maya.cmds as cmds
-    MAYA = True
-except ImportError:
-    MAYA = False
-
-try:
-    import nuke
-    import nukescripts
-    NUKE = True
-except ImportError:
-    NUKE = False
-
-STANDALONE = False
-if not MAYA and not NUKE:
-    STANDALONE = True
-
+import sys
 
 # ----------------------------------------------------------------------
 # Configuration
@@ -43,35 +33,9 @@ if not MAYA and not NUKE:
 WINDOW_TITLE = 'Redshift Playblast'
 WINDOW_OBJECT = 'RedshiftPlayblast'
 
-# Maya-specific
-DOCK_WITH_MAYA_UI = False
-
-# Nuke-specific
-DOCK_WITH_NUKE_UI = False
-
 # Repository path
-REPO_PATH = os.path.dirname(__file__)
+UI_PATH = os.path.dirname(__file__)
 
-# Full path to where .ui files are stored
-UI_PATH = REPO_PATH
-
-# Qt.py option: Set up preffered binding
-# os.environ['QT_PREFERRED_BINDING'] = 'PyQt4'
-# os.environ['QT_PREFERRED_BINDING'] = 'PySide'
-# os.environ['QT_PREFERRED_BINDING'] = 'PyQt5'
-# os.environ['QT_PREFERRED_BINDING'] = 'PySide2'
-if NUKE:
-    # Avoid loading site-wide PyQt4/PyQt5 inside of Nuke
-    os.environ['QT_PREFERRED_BINDING'] = 'PySide'
-
-
-# ----------------------------------------------------------------------
-# Set up Python modules access
-# ----------------------------------------------------------------------
-
-# Enable access to boilerlib (Qt.py, mayapalette)
-if REPO_PATH not in sys.path:
-    sys.path.append(REPO_PATH)
 
 # ----------------------------------------------------------------------
 # Main script
@@ -83,16 +47,16 @@ try:
     from Qt import QtUiTools
 except:
     from PySide2 import QtUiTools
-from redshift_playblast.logic import maya_manager
 
-# Debug
-# print('Using' + QtCompat.__binding__)
+import maya.cmds as cmds
+from redshift_playblast.logic import maya_manager
+from redshift_playblast.model.shader_override_types import Shader_Override_Type
 
 
 class Redshift_Playblast_View(QtWidgets.QMainWindow):
-    """Example showing how UI files can be loaded using the same script
-    when taking advantage of the Qt.py module and build-in methods
-    from PySide/PySide2/PyQt4/PyQt5."""
+    """
+    Redshift playblast view
+    """
 
     def __init__(self, parent=None):
         super(Redshift_Playblast_View, self).__init__(parent)
@@ -104,11 +68,10 @@ class Redshift_Playblast_View(QtWidgets.QMainWindow):
         # Window type
         self.setWindowFlags(QtCore.Qt.Window)
 
-        if MAYA:
-            # Makes Maya perform magic which makes the window stay
-            # on top in OS X and Linux. As an added bonus, it'll
-            # make Maya remember the window position
-            self.setProperty("saveWindowPref", True)
+        # Makes Maya perform magic which makes the window stay
+        # on top in OS X and Linux. As an added bonus, it'll
+        # make Maya remember the window position
+        self.setProperty("saveWindowPref", True)
 
         # Filepaths
         main_window_file = os.path.join(UI_PATH, 'view_maya.ui')
@@ -229,39 +192,16 @@ def _maya_main_window():
 def run_maya():
     """Run in Maya"""
     _maya_delete_ui()  # Delete any existing existing UI
-    boil = Redshift_Playblast_View(parent=_maya_main_window())
+    view = Redshift_Playblast_View(parent=_maya_main_window())
 
     # Makes Maya perform magic which makes the window stay
     # on top in OS X and Linux. As an added bonus, it'll
     # make Maya remember the window position
-    boil.setProperty("saveWindowPref", True)
+    view.setProperty("saveWindowPref", True)
 
-    if not DOCK_WITH_MAYA_UI:
-        boil.show()  # Show the UI
-    elif DOCK_WITH_MAYA_UI:
-        allowed_areas = ['right', 'left']
-        cmds.dockControl(WINDOW_TITLE, label=WINDOW_TITLE, area='left',
-                         content=WINDOW_OBJECT, allowedArea=allowed_areas)
+    view.show()  # Show the UI
 
-
-def run_standalone():
-    """Run standalone
-    Note:
-        Styling the UI with the Maya palette on OS X when using the
-        PySide/PyQt4 bindings result in various issues, which is why
-        it is disabled by default when you're running this combo.
-    .. _Issue #9:
-       https://github.com/fredrikaverpil/pyvfx-boilerplate/issues/9
-    """
-    app = QtWidgets.QApplication(sys.argv)
-    boil = Boilerplate()
-
-    boil.show()  # Show the UI
-    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
-    if MAYA:
-        run_maya()
-    else:
-        run_standalone()
+    run_maya()

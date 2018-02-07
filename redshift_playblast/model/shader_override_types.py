@@ -1,6 +1,6 @@
 class Shader_Override_Type(object):
     """
-    Helpers class for shader override types
+    Helpers class for shader override types, something like an enum
     """
     NO_OVERRIDE = 0 # no shading override is applied and the scene is playblasted with the current shading
     AMBIENT_OCCLUSION = 1 #an ambient occlusion shader is applied to all objects in scene

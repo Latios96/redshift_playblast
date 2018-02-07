@@ -45,19 +45,19 @@ QUALITY_PRESETS={
 }
 
 class Redshift_Worker(object):
+    """
+    Class responable for executing a Playblast_Job
+    """
 
-    def __init__(self, args):
-        #TODO validate args
-        #todo rename args to job here
-        #TODO restore original values after job, needed to run job inside maya
-        self.args=args
+    def __init__(self, job):
+        self.job=job
 
         #load alembic plugin, can lead to problems with referenced alembics
         pm.loadPlugin('AbcImport')
 
         #load file
-        if not args.local_mode:
-            pm.openFile(self.args.file_path, force=True)
+        if not job.local_mode:
+            pm.openFile(self.job.file_path, force=True)
 
         # load redshift plugin
         pm.loadPlugin('redshift4maya')
@@ -140,22 +140,22 @@ class Redshift_Worker(object):
                 context.setAttr(self._get_object_by_name("defaultRenderGlobals").animation, 1)
                 context.setAttr(self._get_object_by_name("defaultRenderGlobals").extensionPadding,4)
 
-                self.set_start_end_frame(context, self.args.start_frame, self.args.end_frame)
+                self.set_start_end_frame(context, self.job.start_frame, self.job.end_frame)
 
-                self.set_resolution(context, self.args.width, self.args.height)
+                self.set_resolution(context, self.job.width, self.job.height)
 
-                self.set_frame_path(context, self.args.frame_path)
+                self.set_frame_path(context, self.job.frame_path)
 
-                self.set_camera(context, self.args.camera)
+                self.set_camera(context, self.job.camera)
 
-                self.set_dof(context, self.args.dof)
+                self.set_dof(context, self.job.dof)
 
-                self.set_motion_blur(context, self.args.motion_blur)
+                self.set_motion_blur(context, self.job.motion_blur)
 
-                self.set_quality(context, self.args.quality)
+                self.set_quality(context, self.job.quality)
 
                 #create shader overrides
-                self.create_shader_override(context, self.args.shader_override_type)
+                self.create_shader_override(context, self.job.shader_override_type)
 
                 logger.info("Rendering range %s-%s", int(self.start_frame), int(self.end_frame))
 
@@ -171,7 +171,7 @@ class Redshift_Worker(object):
         quicktime=self._create_quicktime()
 
         #if local mode, we open the quicktime afterwards
-        if self.args.local_mode:
+        if self.job.local_mode:
             webbrowser.open(quicktime)
 
         return quicktime
@@ -184,7 +184,7 @@ class Redshift_Worker(object):
         """
         start_frame=str(self.start_frame)
         input_path=self.frame_path.replace('####', '%04d')
-        output_file=self.args.movie_path
+        output_file=self.job.movie_path
 
         if os.path.exists(output_file):
             os.remove(output_file)
@@ -230,18 +230,18 @@ class Redshift_Worker(object):
 
         #GREYSCALE
         elif shader_type==Shader_Override_Type.GREYSCALE:
-            redshift_material = pm.createNode('RedshiftMaterial')
+            redshift_material = context.createNode('RedshiftMaterial')
             redshift_material.refl_weight.set(0)
             redshift_material.refl_color.set((0, 0, 0))
 
             for shadingGroup in pm.ls(type='shadingEngine'):
-                shadingGroup.surfaceShader.disconnect()
-                redshift_material.outColor.connect(shadingGroup.surfaceShader)
+                context.disconnectAttr(shadingGroup.surfaceShader)
+                context.connectAttr(redshift_material.outColor,shadingGroup.surfaceShader)
 
         #PRODUCTION_SHADER
         elif shader_type==Shader_Override_Type.PRODUCTION_SHADER:
             logger.info("creating shader override %s", Shader_Override_Type.PRODUCTION_SHADER)
-            hooks.assign_production_shader()
+            hooks.assign_production_shader(context)
 
         #NO_OVERRIDE
         else:

@@ -10,6 +10,9 @@ from redshift_playblast.hooks import hooks
 logger = logging.getLogger(__name__)
 
 class Playblast_Job(QtCore.QObject):
+    """
+    Model class to represent a single playblast job
+    """
 
     data_changed=QtCore.Signal()
 

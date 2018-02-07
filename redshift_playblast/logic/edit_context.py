@@ -9,6 +9,10 @@ def get_edit_context():
     return Edit_Context()
 
 class Edit_Context(object):
+    """
+    Python context manager to do edits in a live maya scene and automatically restore original scene
+    Works with pymel objects ONLY
+    """
 
     def __init__(self):
         self._created_nodes=[]
@@ -67,6 +71,12 @@ class Edit_Context(object):
         return node
 
     def setAttr(self, attribute, value):
+        """
+        Sets given pymel attribute to given value
+        :param attribute:
+        :param value:
+        :return:
+        """
         old_value=attribute.get()
         if attribute not in self._attr_values.keys():
             if old_value!=None:
@@ -89,10 +99,19 @@ class Edit_Context(object):
         attribute.disconnect()
 
     def disable_parallel_evaluation(self):
+        """
+        Some scripts may need to work in serial evaluation mode, this temporary disables parallel evaluation
+        :return:
+        """
         self._eval_mode = pm.evaluationManager(mode=True, query=True)
         pm.evaluationManager(mode="off")
 
     def set_render_cam(self, camera):
+        """
+        Changes the render camera for the current scene
+        :param camera:
+        :return:
+        """
         cams = [x.parent(0) for x in pm.ls(type='camera')]
 
         for cam in cams:
