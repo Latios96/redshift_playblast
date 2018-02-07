@@ -37,6 +37,7 @@ redshift_playblast_view.run_maya()
 # Limitations / knows issues
 - only tested under Windows
 - only Deadline is supported as a Render Manager
+- Deadline currently only supports a single render task, so only one machine will be rendering
 - the script renders single images and stitches them together to a Quicktime using ffmpeg. These single images are rendered as .png files instead of .exr,
 because ffmpeg has problems with exrs from Redshift
 
