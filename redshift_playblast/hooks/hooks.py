@@ -22,6 +22,7 @@ def deadline_job_info_file(file_handle):
     pass
 
 def get_ffmpeg_folder():
+    # type: () -> str
     """
     Returns the path to the folder containing the ffmpeg executable
     :return:

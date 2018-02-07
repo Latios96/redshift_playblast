@@ -13,7 +13,7 @@ Tools to easily create Playblasts from Maya, but instead of OpenGL render them w
 
 # Installation
 ### Maya
-- install Python Dependencies using pip:af
+- install Python Dependencies using pip
 ```sh
 pip install -r requirements.txt --target <some folder in PYTHONPATH for Maya>
 ```
@@ -30,7 +30,7 @@ Run inside Maya
 from redshift_playblast.view import redshift_playblast_view
 redshift_playblast_view.run_maya()
 ```
-# Limitations & knows issues
+# Limitations / knows issues
 - only tested under Windows
 - only Deadline is supported as a Render Manager
 - progress report in Deadline is not working correctly

@@ -47,7 +47,6 @@
 
 - rewrite ui
 - QC Renders for Alembics and VDBs
-- demo video
 
 ## install script
 cmd line script:
