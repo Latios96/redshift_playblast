@@ -2,7 +2,7 @@ import os
 import unittest
 import uuid
 
-from mock import patch, Mock
+from mock import patch, Mock, MagicMock
 
 from redshift_playblast import playblast
 from redshift_playblast.logic import redshift_worker
@@ -136,6 +136,19 @@ class Redshift_Playblast_Test(unittest.TestCase):
         self.assertTrue(webrowser_open_mock.called)
 
         os.remove(quicktime_path)
+
+    @patch('redshift_playblast.hooks.hooks.get_ffmpeg_folder')
+    def test_no_ffmpeg_found(self, ffmpeg_folder_mock):
+        my_mock = construct_job_mock(local_mode=True, start_frame=1, end_frame=2, movie_path="test_path")
+
+        ffmpeg_folder_mock.return_value="C:/tests"
+
+        redshift = redshift_worker.Redshift_Worker(my_mock)
+        redshift.set_start_end_frame(None, 1,2)
+        redshift.set_frame_path(MagicMock(), "test_path")
+
+        with self.assertRaises(redshift_worker.FFmpegNotFound):
+            redshift._create_quicktime()
 
 
 

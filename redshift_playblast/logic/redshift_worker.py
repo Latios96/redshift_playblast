@@ -12,6 +12,8 @@ from redshift_playblast.hooks import hooks
 from redshift_playblast.logic.edit_context import get_edit_context
 from redshift_playblast.model.shader_override_types import Shader_Override_Type
 
+FFMEG_EXE = 'ffmpeg.exe'
+
 MOVIE_EXTENSION = ".mov"
 
 FRAME_EXTENSION = ".png"
@@ -187,7 +189,14 @@ class Redshift_Worker(object):
         if os.path.exists(output_file):
             os.remove(output_file)
 
-        convert_command = '{0}/ffmpeg.exe -apply_trc iec61966_2_1 -r 24 -start_number {1} -i "{2}" -vcodec libx264 -pix_fmt yuv420p -profile:v high -level 4.0 -preset medium -bf 0 "{3}"'.format(hooks.get_ffmpeg_folder(), start_frame, input_path, output_file)
+        ffmpeg_folder=hooks.get_ffmpeg_folder()
+
+        ffmpeg_path=os.path.join(ffmpeg_folder, FFMEG_EXE)
+
+        if not os.path.exists(ffmpeg_path):
+            raise FFmpegNotFound("ffmpeg not found!!1")
+
+        convert_command = '{0} -apply_trc iec61966_2_1 -r 24 -start_number {1} -i "{2}" -vcodec libx264 -pix_fmt yuv420p -profile:v high -level 4.0 -preset medium -bf 0 "{3}"'.format(ffmpeg_path, start_frame, input_path, output_file)
 
         logger.info("generating quicktime...")
         logger.info(convert_command)
@@ -243,3 +252,12 @@ class ObjectNotExistsError(Exception):
     Exception thrown when there is no object with the given name, for example persp_ysdf
     """
     pass
+
+class FFmpegNotFound(Exception):
+    """
+    Exception thrown when ffmpeg.exe could not be found
+    """
+
+    def __init__(self, ffmpeg_path):
+        error="FFmpeg could not be found at location {}. Please install ffmpeg to this location or customize hook get_ffmpeg_folder"
+        super(FFmpegNotFound, self).__init__(error)
