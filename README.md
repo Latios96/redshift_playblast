@@ -1,7 +1,7 @@
 # Redshift Playblast
 
 Tools to easily create Playblasts from Maya, but instead of OpenGL render them with Redshift for proper DOF, Motion Blur, lighting etc.
-
+Demo video: https://vimeo.com/252221253
 # Features
 - a command line script to create the playblast
 - a Deadline Plugin to create the playblast on the Render Farm
