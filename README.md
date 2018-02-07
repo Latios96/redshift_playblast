@@ -22,7 +22,7 @@ pip install -r requirements.txt --target <some_folder_in_PYTHONPATH_for_Maya>
 2. Download Qt.py manually and place it in some_folder_in_PYTHONPATH_for_Maya, mock is only required to run tests:
 https://github.com/mottosso/Qt.py
 - install ffmpeg, download here: https://www.ffmpeg.org/download.html
-- adjust the hook get_ffmpeg_folder() to the path of your ffmpeg folder
+- adjust the hook get_ffmpeg_folder() in redshift_playblast/hooks/hooks.py to the path of your ffmpeg folder
 - copy the folder "redshift_playblast" to some folder in PYTHONPATH for Maya
 
 ### Deadline
