@@ -13,10 +13,14 @@ Demo video: https://vimeo.com/252221253
 
 # Installation
 ### Maya
-- install Python Dependencies using pip
+- install Python Dependencies:
+You have tow options:
+1. using pip
 ```sh
-pip install -r requirements.txt --target <some folder in PYTHONPATH for Maya>
+pip install -r requirements.txt --target <some_folder_in_PYTHONPATH_for_Maya>
 ```
+2. Download Qt.py manually and place it in some_folder_in_PYTHONPATH_for_Maya, mock is only required to run tests:
+https://github.com/mottosso/Qt.py
 - install ffmpeg, download here: https://www.ffmpeg.org/download.html
 - adjust the hook get_ffmpeg_folder() to the path of your ffmpeg folder
 - copy the folder "redshift_playblast" to some folder in PYTHONPATH for Maya
