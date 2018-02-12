@@ -27,6 +27,7 @@ https://github.com/mottosso/Qt.py
 
 ### Deadline
 - the folder "RedshiftPlayblast" is the Deadline Plugin. Inside your Deadline Repository, copy the folder to <DEADLINE_REPOSITOY>/custom/plugins
+- configure the path to redshift_playblast/playblast.py file in the plugin settings in your Deadline Repository
 
 # Usage
 Run inside Maya 
