@@ -19,3 +19,9 @@ Type=filename
 Label=MayaPy Executable
 Default=C:\Program Files\Autodesk\Maya2017\bin\mayapy.exe
 Description=The path to the executable file used for rendering.
+
+[PlayblastScriptFile]
+Type=filename
+Label=Playblast Script File
+Default=M:\workspace\redshift_playblast\redshift_playblast\playblast.py
+Description=The path to the python script used to execute the playblast

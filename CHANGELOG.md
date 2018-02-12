@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+### Fixed
+- path to playblast.py was hardcoded in Deadline Plugin. Can now be configured in Deadline
+
 ## 1.0.0
 first official release, this features are supported:
 - create playblast with redshift in current maya session

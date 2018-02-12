@@ -11,18 +11,19 @@ from redshift_playblast.logic import redshift_worker
 def get_resource(name):
     return os.path.join(os.path.dirname(__file__), 'resources', name)
 
+
 def construct_args_mock_cli(**kwargs):
-    args_mock=Mock()
+    args_mock = Mock()
     args_mock.start_frame = 1
     args_mock.end_frame = 2
-    args_mock.width=1920
+    args_mock.width = 1920
     args_mock.height = 1080
-    args_mock.frame_path=get_resource('playblast_test.####.png')
-    args_mock.file_path=get_resource('test_scene_cube.ma')
-    args_mock.camera='camera1'
+    args_mock.frame_path = get_resource('playblast_test.####.png')
+    args_mock.file_path = get_resource('test_scene_cube.ma')
+    args_mock.camera = 'camera1'
     args_mock.dof = 'True'
-    args_mock.motion_blur='True'
-    args_mock.quality='low'
+    args_mock.motion_blur = 'True'
+    args_mock.quality = 'low'
     args_mock.shader_override_type = 0
 
     for key, value in kwargs.iteritems():
@@ -30,19 +31,20 @@ def construct_args_mock_cli(**kwargs):
 
     return args_mock
 
+
 def construct_job_mock(**kwargs):
-    args_mock=Mock()
+    args_mock = Mock()
     args_mock.start_frame = 1
     args_mock.end_frame = 2
-    args_mock.width=1920
+    args_mock.width = 1920
     args_mock.height = 1080
-    args_mock.frame_path=get_resource('playblast_test.####.png')
-    args_mock.file_path=get_resource('test_scene_cube.ma')
-    args_mock.camera='camera1'
+    args_mock.frame_path = get_resource('playblast_test.####.png')
+    args_mock.file_path = get_resource('test_scene_cube.ma')
+    args_mock.camera = 'camera1'
     args_mock.dof = True
-    args_mock.motion_blur=True
-    args_mock.quality='low'
-    args_mock.shader_override_type=0
+    args_mock.motion_blur = True
+    args_mock.quality = 'low'
+    args_mock.shader_override_type = 0
 
     for key, value in kwargs.iteritems():
         setattr(args_mock, key, value)
@@ -59,25 +61,25 @@ class Redshift_Playblast_Test(unittest.TestCase):
         :param argparse_mock:
         :return:
         """
-        #constructing result fakce
-        my_mock=construct_args_mock_cli(quality='ert')
-        argparse_mock.return_value=my_mock
+        # constructing result fakce
+        my_mock = construct_args_mock_cli(quality='ert')
+        argparse_mock.return_value = my_mock
 
-        #now parse the args
+        # now parse the args
         with self.assertRaises(playblast.PlayblastQualityError):
             playblast.main()
 
     @patch('redshift_playblast.logic.redshift_worker.Redshift_Worker')
     @patch('argparse.ArgumentParser.parse_args')
-    def test_spelling_robustness(self, argparse_mock,redshift_mock):
+    def test_spelling_robustness(self, argparse_mock, redshift_mock):
         """
         Tests when the playblast script is called with a correct quality in non-upper-case, like low, lOw, or loW
         :param argparse_mock:
         :return:
         """
-        for spelling in ['low', 'loW', 'Low','high', 'HigH','med']:
+        for spelling in ['low', 'loW', 'Low', 'high', 'HigH', 'med']:
             # constructing result fakce
-            my_mock=construct_args_mock_cli(quality=spelling)
+            my_mock = construct_args_mock_cli(quality=spelling)
             argparse_mock.return_value = my_mock
 
             # now parse the args
@@ -95,7 +97,7 @@ class Redshift_Playblast_Test(unittest.TestCase):
         redshift = redshift_worker.Redshift_Worker(my_mock)
 
         # test existing obj
-        self.assertFalse(redshift._get_object_by_name('persp')==None)
+        self.assertFalse(redshift._get_object_by_name('persp') == None)
 
         # test non existing obj
         with self.assertRaises(redshift_worker.ObjectNotExistsError):
@@ -106,11 +108,11 @@ class Redshift_Playblast_Test(unittest.TestCase):
         Tests if the redshift setters work correctly
         :return:
         """
-        argparse_mock=Mock()
+        argparse_mock = Mock()
         my_mock = construct_job_mock()
         redshift = redshift_worker.Redshift_Worker(my_mock)
 
-        #now check correctness of values
+        # now check correctness of values
 
     @patch('webbrowser.open')
     def test_render_frames_no_redshift_config(self, webrowser_open_mock):
@@ -119,17 +121,17 @@ class Redshift_Playblast_Test(unittest.TestCase):
         :return:
         """
         argparse_mock = Mock()
-        frames=get_resource('test_render_{0}.####.png'.format(str(uuid.uuid4()).split('-')[0]))
+        frames = get_resource('test_render_{0}.####.png'.format(str(uuid.uuid4()).split('-')[0]))
         my_mock = construct_job_mock(file_path=get_resource('test_scene_cube_no_redshift.ma'),
-                                      start_frame=1,
-                                      end_frame=3,
-                                      frame_path=frames,
-                                      movie_path=frames.replace("####.png", "mov"),
-                                      camera='render_cam',
-                                      )
+                                     start_frame=1,
+                                     end_frame=3,
+                                     frame_path=frames,
+                                     movie_path=frames.replace("####.png", "mov"),
+                                     camera='render_cam',
+                                     )
 
         redshift = redshift_worker.Redshift_Worker(my_mock)
-        quicktime_path=redshift.create_playblast()
+        quicktime_path = redshift.create_playblast()
 
         self.assertTrue(os.path.exists(quicktime_path))
 
@@ -141,19 +143,14 @@ class Redshift_Playblast_Test(unittest.TestCase):
     def test_no_ffmpeg_found(self, ffmpeg_folder_mock):
         my_mock = construct_job_mock(local_mode=True, start_frame=1, end_frame=2, movie_path="test_path")
 
-        ffmpeg_folder_mock.return_value="C:/tests"
+        ffmpeg_folder_mock.return_value = "C:/tests"
 
         redshift = redshift_worker.Redshift_Worker(my_mock)
-        redshift.set_start_end_frame(None, 1,2)
+        redshift.set_start_end_frame(None, 1, 2)
         redshift.set_frame_path(MagicMock(), "test_path")
 
         with self.assertRaises(redshift_worker.FFmpegNotFound):
             redshift._create_quicktime()
-
-
-
-
-
 
 
 if __name__ == '__main__':

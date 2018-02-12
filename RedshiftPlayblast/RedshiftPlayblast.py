@@ -61,6 +61,14 @@ class RedshiftPlayblastPlugin (DeadlinePlugin):
 
         return maya_exe
 
+    def playblast_script(self):
+        playblast_script_py_list=self.GetConfigEntry( "PlayblastScriptFile" )
+        playblast_script_py = FileUtils.SearchFileList( playblast_script_py_list )
+        if playblast_script_py == "":
+            self.FailRender( "playblast.py script file was not found in the semicolon separated list \"" + playblast_script_py_list + "\". The path to the playblast script can be configured from the Plugin Configuration in the Deadline Monitor." )
+
+        return playblast_script_py
+
     def do_progress (self):
         self.total_frames=int(self.GetPluginInfoEntry('end_frame'))-int(self.GetPluginInfoEntry('start_frame'))
         self.frames_done+=1
@@ -68,7 +76,7 @@ class RedshiftPlayblastPlugin (DeadlinePlugin):
         self.SetProgress(self.frames_done*100/(self.total_frames+1))
 
     def RenderArgument(self):
-        renderArguments= r"M:\workspace\redshift_playblast\redshift_playblast\playblast.py"
+        renderArguments= self.playblast_script()
         print "getting file path"
         renderArguments+=' -file_path "{0}"'.format(self.GetPluginInfoEntry('file_path')) 
 
